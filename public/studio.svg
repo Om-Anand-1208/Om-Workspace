@@ -1,0 +1,141 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 680" fill="none">
+  <defs>
+    <linearGradient id="wallL" x1="180" y1="130" x2="430" y2="480" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#F1E8D7"/><stop offset="1" stop-color="#E7DCC7"/>
+    </linearGradient>
+    <linearGradient id="wallR" x1="520" y1="70" x2="810" y2="450" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#F8F0E2"/><stop offset="1" stop-color="#EFE4D2"/>
+    </linearGradient>
+    <linearGradient id="floor" x1="350" y1="290" x2="710" y2="620" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#D7C9B0"/><stop offset="1" stop-color="#C9B99E"/>
+    </linearGradient>
+    <linearGradient id="window" x1="233" y1="250" x2="399" y2="352" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#CADAC7"/><stop offset="1" stop-color="#AFC3A9"/>
+    </linearGradient>
+    <linearGradient id="screen" x1="444" y1="305" x2="550" y2="381" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#667B70"/><stop offset="1" stop-color="#41584E"/>
+    </linearGradient>
+    <filter id="softShadow" x="180" y="245" width="640" height="390" color-interpolation-filters="sRGB" filterUnits="userSpaceOnUse">
+      <feGaussianBlur stdDeviation="12"/>
+    </filter>
+    <filter id="objectShadow" x="300" y="250" width="440" height="310" color-interpolation-filters="sRGB" filterUnits="userSpaceOnUse">
+      <feGaussianBlur stdDeviation="4"/>
+    </filter>
+  </defs>
+
+  <!-- Little room shell -->
+  <path d="M500 45 850 228 500 420 150 237 500 45Z" fill="#E4D9C6"/>
+  <path d="M150 237 500 45v211L150 440V237Z" fill="url(#wallL)" stroke="#D5C8B3" stroke-width="2"/>
+  <path d="M500 45 850 228v212L500 256V45Z" fill="url(#wallR)" stroke="#DED2BF" stroke-width="2"/>
+  <path d="M150 440 500 256l350 184-350 198-350-198Z" fill="url(#floor)" stroke="#BBAA8D" stroke-width="2"/>
+  <path d="m500 256 0 382M150 440l350 198M850 440 500 638" stroke="#B6A58A" stroke-opacity=".28" stroke-width="2"/>
+
+  <!-- Soft afternoon light on the left wall -->
+  <path d="m228 253 169-93v111l-169 94V253Z" fill="url(#window)" stroke="#B4A88F" stroke-width="5" stroke-linejoin="round"/>
+  <path d="m312 206 0 111m-84-65 169-94" stroke="#F6F0E4" stroke-width="5" opacity=".94"/>
+  <path d="m250 245 120-66m-92 86 95-53" stroke="#FFF8E8" stroke-width="4" opacity=".35"/>
+  <path d="m397 271 103 54v177l-103-58V271Z" fill="#D8D0B9" opacity=".18"/>
+
+  <!-- Small framed illustration on the right wall -->
+  <path d="m617 150 127 66v96l-127-68v-94Z" fill="#8C7259" opacity=".14"/>
+  <path d="m622 130 125 65v92l-125-66v-91Z" fill="#B58E6E" stroke="#96795F" stroke-width="7" stroke-linejoin="round"/>
+  <path d="m635 151 99 51v67l-99-52v-66Z" fill="#F2E7D4"/>
+  <circle cx="692" cy="204" r="17" fill="#D6A66F"/>
+  <path d="M636 254c13-27 31-36 49-28 16-27 36-24 50 4v39l-99-52v37Z" fill="#819478"/>
+  <path d="M652 246c10-13 20-20 31-20m19-12c10 4 18 13 25 27" stroke="#F8F1E6" stroke-width="3" opacity=".75"/>
+
+  <!-- Pinboard and little notes -->
+  <path d="m747 310 72 38v54l-72-39v-53Z" fill="#C7B18D" stroke="#B39C78" stroke-width="3"/>
+  <path d="m759 324 21 11v19l-21-11v-19Z" fill="#FAF3E5"/>
+  <path d="m786 340 20 11v20l-20-11v-20Z" fill="#E4B694"/>
+  <path d="m760 359 17 9m13 0 18 10" stroke="#9D896D" stroke-width="2" opacity=".6"/>
+  <circle cx="769" cy="320" r="4" fill="#C77B57"/>
+
+  <!-- Floor rug -->
+  <path d="m303 462 186-104 235 124-189 112-232-132Z" fill="#77866D" opacity=".18"/>
+  <path d="m336 457 151-84 207 109-153 91-205-116Z" stroke="#F5EFE5" stroke-opacity=".6" stroke-width="2"/>
+  <path d="m369 455 118-66 174 92-120 72-172-98Z" stroke="#F5EFE5" stroke-opacity=".42" stroke-width="2"/>
+
+  <!-- Desk shadows -->
+  <path d="m314 397 238-133 280 148-241 143-277-158Z" fill="#6D5B42" opacity=".14" filter="url(#softShadow)"/>
+
+  <!-- Desk legs and warm wood top -->
+  <path d="m381 404 28 14v106l-28-16V404Z" fill="#927557"/>
+  <path d="m629 411 27-15v103l-27 17V411Z" fill="#7E644A"/>
+  <path d="m494 466 29 17v95l-29-17v-95Z" fill="#A08360"/>
+  <path d="m680 397 27 14v94l-27-16v-92Z" fill="#8C7050"/>
+  <path d="m365 396 230-128 321 169-235 138-316-179Z" fill="#997B57"/>
+  <path d="m365 384 230-128 321 169-235 138-316-179Z" fill="#C5A57A" stroke="#8E7353" stroke-width="3" stroke-linejoin="round"/>
+  <path d="m375 385 220-122 302 161-216 128-306-167Z" fill="#D3B38A" opacity=".72"/>
+  <path d="m392 394 203-113 276 147" stroke="#E7CEAA" stroke-width="3" opacity=".7"/>
+
+  <!-- Monitor -->
+  <path d="m445 270 116-64 137 72-117 67-136-75Z" fill="#645440" opacity=".13" filter="url(#objectShadow)"/>
+  <path d="m462 236 102-57 119 63-103 59-118-65Z" fill="#4D4B43"/>
+  <path d="m472 238 92-51 101 54-93 53-100-56Z" fill="url(#screen)" stroke="#6B6355" stroke-width="4" stroke-linejoin="round"/>
+  <path d="m491 239 73-40 72 38-74 42-71-40Z" fill="#718575" opacity=".75"/>
+  <circle cx="561" cy="240" r="16" fill="#F0D7AA" opacity=".88"/>
+  <path d="M513 264c13-22 27-26 42-16 15-22 31-19 49 8l-49 27-42-19Z" fill="#A9B69A"/>
+  <path d="m560 293 1 22 28 15-1-22-28-15Z" fill="#777064"/>
+  <path d="m532 331 59-34 36 20-60 35-35-21Z" fill="#8C8373"/>
+  <path d="m548 330 28-16 20 11-28 16-20-11Z" fill="#D6C9B2"/>
+  <circle cx="566" cy="333" r="2" fill="#71816B"/>
+
+  <!-- Keyboard -->
+  <path d="m469 367 100-56 104 55-102 60-102-59Z" fill="#6D6557" opacity=".16"/>
+  <path d="m462 357 102-58 104 55-104 60-102-57Z" fill="#A89B84" stroke="#877A65" stroke-width="2"/>
+  <path d="m478 357 83-47 89 47-86 50-86-50Z" fill="#E1D6C2"/>
+  <path d="m493 356 12-7m7 12 12-7m7 12 12-7m7 12 12-7m8 12 12-7m-73-29 12-7m8 11 12-7m8 11 12-7m8 11 12-7m8 11 12-7" stroke="#9A8E7B" stroke-width="2" stroke-linecap="round"/>
+
+  <!-- Phone on the desk -->
+  <path d="m630 383 43-24 50 27-44 25-49-28Z" fill="#675843" opacity=".16"/>
+  <path d="m628 374 39-22 49 26-40 23-48-27Z" fill="#3F403C"/>
+  <path d="m634 373 33-18 40 22-34 19-39-23Z" fill="#8BA18B"/>
+  <path d="m645 369 24-13 27 15-25 14-26-16Z" fill="#D8E4CD"/>
+  <circle cx="671" cy="375" r="3" fill="#768B70"/>
+
+  <!-- A potted plant on the desk -->
+  <path d="m720 320 43 23v29l-43-24v-28Z" fill="#B87355"/>
+  <path d="m720 320 43 23-22 13-42-23 21-13Z" fill="#D49570"/>
+  <path d="m699 332 21-12 43 23-22 13-42-24Z" fill="#E0A17C"/>
+  <path d="m720 318-4-37m4 37-21-29m21 29 20-37m-20 37 2-52" stroke="#6B8060" stroke-width="5" stroke-linecap="round"/>
+  <path d="M716 285c-17 3-23-10-18-23 16 2 23 10 18 23Zm6 0c-1-18 10-27 24-25 0 16-8 25-24 25Zm-4 19c-18-2-24 8-22 21 15 0 23-7 22-21Zm7-11c-2-15 6-23 20-23 2 13-4 22-20 23Z" fill="#819777" stroke="#6D8263" stroke-width="2" stroke-linejoin="round"/>
+
+  <!-- Desk lamp -->
+  <path d="m420 323 18-53 14 8-18 53-14-8Z" fill="#6F6859"/>
+  <path d="m412 325 34 19 29-16-34-20-29 17Z" fill="#A89778"/>
+  <path d="m428 259 40-22 30 16-41 24-29-18Z" fill="#D5A66F" stroke="#AA8259" stroke-width="3" stroke-linejoin="round"/>
+  <path d="m450 277 13 7-15 43-13-8 15-42Z" fill="#9E8767"/>
+  <path d="m432 328 34 19 12-7-34-19-12 7Z" fill="#81735F"/>
+  <path d="m442 272 35-20" stroke="#F3D39F" stroke-width="4" opacity=".75"/>
+
+  <!-- Mug and pencil jar -->
+  <path d="m367 375 24 13v20l-24-13v-20Z" fill="#EEE3D3" stroke="#BDAE96" stroke-width="2"/>
+  <path d="m391 388 10-5v12l-10 5v-12Z" fill="#D0BDA3"/>
+  <path d="m372 371 12-7 21 11-13 8-20-12Z" fill="#F8F0E3"/>
+  <path d="m380 371c-3-7 1-11 5-13" stroke="#AF8061" stroke-width="2" stroke-linecap="round"/>
+  <path d="m737 362 19 10v24l-19-11v-23Z" fill="#77866D"/>
+  <path d="m737 362 19 10-9 5-19-11 9-4Z" fill="#94A080"/>
+  <path d="m740 360 2-24m7 28 10-27m-15 22-7-20" stroke="#8D7554" stroke-width="3" stroke-linecap="round"/>
+
+  <!-- A round chair tucked under the desk -->
+  <path d="m409 519 111-63 87 47-113 67-85-51Z" fill="#6B5A43" opacity=".18"/>
+  <path d="m453 502 62 35v59l-62-35v-59Z" fill="#B57959"/>
+  <path d="m453 502 55-31 61 34-54 32-62-35Z" fill="#D49A72"/>
+  <path d="m465 506 42-24 43 24-42 25-43-25Z" fill="#E1AC82"/>
+  <path d="m480 540 13 7v50l-13-7v-50Zm40 0 12-7v50l-12 7v-50Z" fill="#8E6E4F"/>
+
+  <!-- Tiny plant beside the chair -->
+  <path d="m267 441 40 22v37l-40-22v-37Z" fill="#C17D5C"/>
+  <path d="m267 441 20-12 41 22-21 12-40-22Z" fill="#D99871"/>
+  <path d="m286 429-2-49m2 49-20-34m20 34 23-42m-23 42-2-58" stroke="#708766" stroke-width="5" stroke-linecap="round"/>
+  <path d="M285 394c-16 0-22-11-16-23 14 2 20 10 16 23Zm5-3c0-16 10-24 22-21 0 14-8 22-22 21Zm-4-20c-14-2-20-11-16-22 13 2 19 9 16 22Zm3-4c-2-14 6-22 18-21 1 12-5 20-18 21Z" fill="#849777"/>
+
+  <!-- Warm light pool on the floor -->
+  <path d="m377 353 95-53 174 92-97 56-172-95Z" fill="#F5D99F" opacity=".11"/>
+
+  <!-- Edges and hand-drawn room details -->
+  <path d="m150 237 350 183 350-192M150 440l350 198 350-198" stroke="#A99575" stroke-opacity=".35" stroke-width="2"/>
+  <circle cx="815" cy="472" r="3" fill="#AF906B" opacity=".6"/>
+  <circle cx="195" cy="466" r="2" fill="#AF906B" opacity=".55"/>
+</svg>

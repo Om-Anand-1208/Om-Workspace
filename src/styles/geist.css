@@ -1,0 +1,95 @@
+@import '@fontsource-variable/geist';
+@import '@fontsource-variable/geist-mono';
+
+/* A neutral, Geist-inspired layer shared by the room, catalogue and project pages. */
+:root { --cyan:#ededed; --mono:'Geist Mono Variable', ui-monospace, monospace; --ui-bg:#0a0a0a; --ui-panel:#111; --ui-border:#333; --ui-text:#ededed; --ui-muted:#a1a1a1; }
+body { font-family:'Geist Variable', Inter, system-ui, sans-serif; color:var(--ui-text); }
+a:focus-visible, button:focus-visible { outline:2px solid #ededed; outline-offset:3px; }
+.studio-seal { border-color:#555; background:#111d; color:#ededed; font-family:'Geist Variable',sans-serif; font-weight:600; }
+.studio-name { color:#ededed; letter-spacing:.08em; }
+.intro { color:#ededed; }
+.intro h1 { font-weight:600; letter-spacing:-.055em; }
+.intro p, .social-links a { color:#a1a1a1; }
+.intro-kicker, .tv-hint, .intro-kicker span { color:#888; }
+.social-links a:hover { color:#fff; }
+.work-button { border:1px solid #ededed; border-radius:6px; background:#ededed; color:#0a0a0a; font-family:'Geist Variable',sans-serif; font-size:12px; font-weight:600; }
+.work-button:hover { background:#cfcfcf; border-color:#cfcfcf; }
+.camera-help, .reset-view, .social-hint { background:#111e; border-color:#333; color:#a1a1a1; }
+.camera-help kbd, .camera-help i, .reset-view > span:first-child { color:#ededed; }
+.room-credit { color:#888; }
+.room-credit:hover { color:#fff; }
+
+.work-dialog { background:#0a0a0a; color:#ededed; border:1px solid #333; border-radius:12px; box-shadow:0 32px 100px #000c; }
+.work-dialog::backdrop { background:#000c; backdrop-filter:blur(8px); }
+.work-header { border-color:#292929; padding:34px 38px 30px; }
+.work-header h2 { color:#ededed; font-weight:600; letter-spacing:-.055em; }
+.work-header h2 span, .project-copy h1 span, .project-history h2 span { color:inherit; }
+.work-header p:last-child { color:#a1a1a1; font-size:14px; }
+.eyebrow, .eyebrow span { color:#888; }
+.close-work { width:36px; height:36px; border-color:#333; border-radius:6px; background:#111; color:#ededed; font-size:22px; }
+.close-work:hover { background:#222; border-color:#555; }
+.catalogue-intro { color:#888; font-size:10px; }
+.catalogue-grid { gap:16px; background:none; border:0; }
+.catalogue-card { border:1px solid #333; border-radius:8px; overflow:hidden; background:#111; transition:border-color .2s, background .2s; }
+.catalogue-card:hover, .catalogue-card:focus-visible { background:#1a1a1a; border-color:#666; }
+.catalogue-image { background:#202020; border-bottom:1px solid #333; }
+.catalogue-image > span { color:#ededed; background:#111c; border:1px solid #ffffff24; padding:5px 7px; border-radius:4px; }
+.catalogue-label { align-items:center; padding:17px 18px 20px; }
+.catalogue-label span { color:#888; }
+.catalogue-label h3 { color:#ededed; font-weight:550; }
+.catalogue-label b { color:#a1a1a1; }
+.work-footer { border-color:#292929; color:#888; }
+
+html:has(.project-page), body.project-page { background:#0a0a0a; }
+.project-page { color:#ededed; }
+.project-top, .project-bottom { border-color:#292929; color:#888; }
+.project-top a, .project-bottom a { color:#a1a1a1; }
+.project-top a:hover, .project-bottom a:hover { color:#fff; }
+.project-copy h1 { font-weight:600; letter-spacing:-.055em; }
+.project-description { color:#a1a1a1; line-height:1.7; }
+.project-stack, .model-heading, .model-caption, .project-history, .history-row { border-color:#303030; }
+.project-stack span, .model-heading, .model-caption, .history-note, .history-state, .history-date, .history-row code { color:#888; }
+.project-stack p { color:#ededed; }
+.project-actions a { border:1px solid #ededed; border-radius:6px; background:#ededed; color:#0a0a0a; font-family:'Geist Variable',sans-serif; font-size:12px; font-weight:600; }
+.project-actions a:hover { background:#ccc; border-color:#ccc; }
+.project-actions a + a { background:#111; color:#ededed; border-color:#444; }
+.project-actions a + a:hover { background:#222; border-color:#666; }
+#project-model { background:radial-gradient(ellipse at center,#202020 0%,#101010 66%,#0a0a0a 100%); }
+.project-history h2 { font-weight:600; }
+.history-row { color:#ededed; }
+.history-row:hover, .history-link { color:#ededed; }
+.history-link:hover { color:#aaa; }
+@media (max-width:640px) {
+  .work-header { padding:24px 20px; }
+  .catalogue-grid { gap:10px; }
+  .catalogue-label { padding:12px; }
+  .catalogue-label h3 { font-size:14px; }
+  .project-history { border-color:#303030; }
+}
+/* Intro is present only when JavaScript is available; the room remains usable without it. */
+.welcome-screen { display:none; }
+.has-welcome .welcome-screen:not([hidden]) { position:fixed; inset:0; z-index:100; display:grid; place-items:center; padding:24px; background:#000; color:#ededed; opacity:1; transition:opacity .7s ease; }
+.has-welcome .welcome-screen.is-leaving { opacity:0; pointer-events:none; }
+.welcome-copy { text-align:center; font-family:'Geist Variable',system-ui,sans-serif; font-size:clamp(25px,4.3vw,54px); font-weight:500; letter-spacing:-.045em; line-height:1.18; }
+.welcome-line { display:block; opacity:0; animation:welcome-arrive .8s cubic-bezier(.2,.8,.2,1) .15s forwards; }
+.welcome-line-secondary { color:#a1a1a1; animation-delay:.85s; }
+@keyframes welcome-arrive { from { opacity:0; transform:translateY(10px); } to { opacity:1; transform:translateY(0); } }
+@media (prefers-reduced-motion:reduce) { .has-welcome .welcome-screen { transition:none; } .welcome-line { opacity:1; animation:none; } }
+/* Characters resolve into the greeting, with a brief underline like the reference. */
+.welcome-copy { font-family:'Geist Mono Variable',ui-monospace,monospace; font-size:clamp(19px,3.4vw,43px); font-weight:600; line-height:1.5; letter-spacing:-.045em; }
+.welcome-line { opacity:1; animation:none; white-space:nowrap; }
+.welcome-line-secondary { color:#ededed; }
+.welcome-copy::after { content:''; display:block; height:3px; width:0; max-width:100%; margin:10px auto 0; background:#ededed; transition:width .45s ease; }
+.is-resolved .welcome-copy::after { width:100%; }
+@media (prefers-reduced-motion:reduce) { .welcome-copy::after { display:none; } }
+.welcome-line-secondary::after { content:'▋'; display:inline-block; margin-left:2px; font-size:.8em; animation:welcome-cursor .65s steps(1,end) infinite; }
+.is-resolved .welcome-line-secondary::after { display:none; }
+@keyframes welcome-cursor { 50% { opacity:0; } }
+@media (prefers-reduced-motion:reduce) { .welcome-line-secondary::after { display:none; animation:none; } }
+.welcome-line { min-height:1.5em; }
+.welcome-line-secondary::after { display:none; }
+.is-typing-first .welcome-line:first-child::after, .is-typing-second .welcome-line-secondary::after { content:'▋'; display:inline-block; margin-left:2px; font-size:.8em; animation:welcome-cursor .65s steps(1,end) infinite; }
+@media (prefers-reduced-motion:reduce) { .is-typing-first .welcome-line:first-child::after, .is-typing-second .welcome-line-secondary::after { display:none; animation:none; } }
+/* Provide keyboard access to the TV's project catalogue without a persistent overlay. */
+.screen-reader-work { position:absolute; width:1px; height:1px; padding:0; overflow:hidden; clip-path:inset(50%); white-space:nowrap; border:0; }
+.screen-reader-work:focus-visible { top:20px; left:20px; width:auto; height:auto; padding:12px 16px; overflow:visible; clip-path:none; border:1px solid #ededed; border-radius:6px; background:#ededed; color:#0a0a0a; z-index:5; }

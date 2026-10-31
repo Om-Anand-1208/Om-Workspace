@@ -1,0 +1,917 @@
+import * as THREE from 'three';
+import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+import { DRACOLoader } from 'three/addons/loaders/DRACOLoader.js';
+import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+
+const viewportElement = document.querySelector<HTMLElement>('#room-viewport');
+if (!viewportElement) throw new Error('Room viewport not found.');
+const viewport: HTMLElement = viewportElement;
+const resetButton = document.querySelector<HTMLButtonElement>('#reset-view');
+const status = document.querySelector<HTMLElement>('#room-status');
+const socialHint = document.querySelector<HTMLElement>('#social-hint');
+if (status) {
+  status.textContent = 'Loading the room…';
+  status.hidden = false;
+}
+
+// Fill these four fields when the account details are ready. The scene objects
+// already use this single config for their links and the live contribution feed.
+const portfolioProfiles = {
+  linkedinUrl: 'https://www.linkedin.com/in/om-anand-8bb7242b2',
+  githubUrl: 'https://github.com/Om-Anand-1208',
+  githubUsername: 'Om-Anand-1208',
+  codolioUrl: 'https://codolio.com/profile/om_anand_7323',
+};
+
+type SocialKey = 'linkedin' | 'github' | 'codolio' | 'projects';
+type InteractiveItem = {
+  root: THREE.Group;
+  key: SocialKey;
+  label: string;
+  url: string;
+  baseScale: number;
+  hoverScale: number;
+};
+
+type GitHubContribution = {
+  date: string;
+  count: number;
+  level: number;
+};
+
+const interactiveItems: InteractiveItem[] = [];
+const raycaster = new THREE.Raycaster();
+const pointer = new THREE.Vector2();
+let hoveredItem: InteractiveItem | null = null;
+let pointerDownPosition: { x: number; y: number } | null = null;
+let hintTimer: number | undefined;
+
+const scene = new THREE.Scene();
+scene.background = new THREE.Color('#050505');
+
+const camera = new THREE.PerspectiveCamera(20, 1, 0.1, 150);
+const startPosition = new THREE.Vector3(-15.2, 10.8, 15.2);
+const startTarget = new THREE.Vector3(0, 2, 0);
+camera.position.copy(startPosition);
+
+let renderer: THREE.WebGLRenderer;
+try {
+  renderer = new THREE.WebGLRenderer({ antialias: true, powerPreference: 'high-performance' });
+} catch (error) {
+  if (status) status.textContent = 'The 3D room is unavailable in this browser. Explore the projects using the menu.';
+  window.dispatchEvent(new Event('room-ready'));
+  throw error;
+}
+renderer.setPixelRatio(Math.min(window.devicePixelRatio, window.matchMedia('(max-width: 640px)').matches ? 1.5 : 2));
+renderer.outputColorSpace = THREE.SRGBColorSpace;
+renderer.toneMapping = THREE.ACESFilmicToneMapping;
+renderer.toneMappingExposure = 1.2;
+renderer.shadowMap.enabled = true;
+renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+viewport.appendChild(renderer.domElement);
+
+function sharpenTexture<T extends THREE.Texture>(texture: T): T {
+  texture.colorSpace = THREE.SRGBColorSpace;
+  texture.anisotropy = renderer.capabilities.getMaxAnisotropy();
+  texture.minFilter = THREE.LinearMipmapLinearFilter;
+  texture.magFilter = THREE.LinearFilter;
+  texture.generateMipmaps = true;
+  texture.needsUpdate = true;
+  return texture;
+}
+
+const controls = new OrbitControls(camera, renderer.domElement);
+controls.target.copy(startTarget);
+controls.minDistance = 10;
+controls.maxDistance = 50;
+controls.maxPolarAngle = Math.PI / 2;
+controls.minAzimuthAngle = -Math.PI / 2;
+controls.maxAzimuthAngle = 0;
+controls.update();
+
+const modelLoader = new GLTFLoader();
+const dracoLoader = new DRACOLoader();
+dracoLoader.setDecoderPath('/draco/');
+modelLoader.setDRACOLoader(dracoLoader);
+
+function makeScreenTexture(kind: 'monitor' | 'laptop') {
+  const canvas = document.createElement('canvas');
+  canvas.width = 960;
+  canvas.height = 600;
+  const context = canvas.getContext('2d');
+  if (!context) return new THREE.CanvasTexture(canvas);
+
+  if (kind === 'monitor') {
+    context.fillStyle = '#0b1420';
+    context.fillRect(0, 0, canvas.width, canvas.height);
+    context.fillStyle = '#111f2d';
+    context.fillRect(0, 0, canvas.width, 48);
+    context.fillStyle = '#eff3f7';
+    context.font = '600 18px sans-serif';
+    context.fillText('OM / STUDIO', 28, 30);
+    context.fillStyle = '#8ea1b2';
+    context.font = '13px monospace';
+    context.fillText('WORK    ABOUT    NOTES', 690, 30);
+    context.fillStyle = '#101c29';
+    context.fillRect(0, 48, 190, 552);
+    context.fillStyle = '#61d6e7';
+    context.font = '12px monospace';
+    context.fillText('YOUR SPACE', 28, 95);
+    context.fillStyle = '#c6d0d9';
+    context.font = '15px sans-serif';
+    ['Overview', 'Projects', 'Experiments'].forEach((label, index) => {
+      context.fillText(label, 30, 138 + index * 38);
+    });
+    context.fillStyle = '#61d6e7';
+    context.font = '12px monospace';
+    context.fillText('A NOTE FROM OM', 235, 120);
+    context.fillStyle = '#f1ece4';
+    context.font = '500 42px Georgia, serif';
+    context.fillText('Make ideas real.', 232, 183);
+    context.fillStyle = '#b3c0cb';
+    context.font = '18px sans-serif';
+    context.fillText('Design, code, and small experiments.', 235, 221);
+    const cards = [
+      { x: 235, color: '#25607a', label: 'SELECTED WORK' },
+      { x: 465, color: '#68415e', label: 'RECENT NOTES' },
+      { x: 695, color: '#6a5238', label: 'NOW EXPLORING' },
+    ];
+    for (const card of cards) {
+      context.fillStyle = '#152432';
+      context.fillRect(card.x, 280, 205, 220);
+      context.fillStyle = card.color;
+      context.fillRect(card.x + 12, 292, 181, 115);
+      context.fillStyle = '#d9e2e8';
+      context.font = '13px monospace';
+      context.fillText(card.label, card.x + 14, 442);
+      context.fillStyle = '#8496a5';
+      context.fillRect(card.x + 14, 461, 120, 5);
+    }
+    context.fillStyle = '#52d5e6';
+    context.fillRect(0, 584, canvas.width, 16);
+  } else {
+    const background = context.createLinearGradient(0, 0, canvas.width, canvas.height);
+    background.addColorStop(0, '#17374b');
+    background.addColorStop(0.55, '#382a50');
+    background.addColorStop(1, '#bd7357');
+    context.fillStyle = background;
+    context.fillRect(0, 0, canvas.width, canvas.height);
+    context.globalAlpha = 0.16;
+    context.fillStyle = '#76d9e6';
+    context.beginPath(); context.arc(760, 120, 210, 0, Math.PI * 2); context.fill();
+    context.fillStyle = '#f7bc7d';
+    context.beginPath(); context.arc(190, 560, 260, 0, Math.PI * 2); context.fill();
+    context.globalAlpha = 1;
+    context.fillStyle = '#e8dfea';
+    context.font = '13px monospace';
+    context.fillText('OM  /  CREATIVE SYSTEMS', 54, 70);
+    context.fillStyle = '#fff8f0';
+    context.font = '500 54px Georgia, serif';
+    context.fillText('Hello, I’m Om.', 54, 245);
+    context.fillStyle = '#eee1e4';
+    context.font = '20px sans-serif';
+    context.fillText('I make thoughtful digital things.', 58, 289);
+    context.fillStyle = '#111827d9';
+    context.fillRect(58, 350, 196, 52);
+    context.fillStyle = '#b7f4f3';
+    context.font = '13px monospace';
+    context.fillText('EXPLORE PROJECTS  ↗', 75, 382);
+    context.fillStyle = '#ffffffaa';
+    context.font = '12px monospace';
+    context.fillText('DESIGN   ·   BUILD   ·   REFINE', 58, 545);
+  }
+
+  const texture = new THREE.CanvasTexture(canvas);
+  return sharpenTexture(texture);
+}
+
+function makeNightWindowTexture() {
+  const canvas = document.createElement('canvas');
+  canvas.width = 512;
+  canvas.height = 768;
+  const context = canvas.getContext('2d');
+  if (!context) return new THREE.CanvasTexture(canvas);
+
+  const sky = context.createLinearGradient(0, 0, 0, canvas.height);
+  sky.addColorStop(0, '#020611');
+  sky.addColorStop(0.58, '#07152d');
+  sky.addColorStop(1, '#10264a');
+  context.fillStyle = sky;
+  context.fillRect(0, 0, canvas.width, canvas.height);
+
+  const stars = [
+    [54, 96, 2], [113, 174, 1], [186, 72, 1.5], [265, 138, 2],
+    [337, 64, 1], [424, 190, 1.5], [471, 104, 1], [81, 286, 1],
+    [219, 252, 1.5], [389, 318, 1], [458, 264, 2], [302, 356, 1],
+  ];
+  context.fillStyle = '#d8e8ff';
+  for (const [x, y, radius] of stars) {
+    context.beginPath();
+    context.arc(x, y, radius, 0, Math.PI * 2);
+    context.fill();
+  }
+
+  context.fillStyle = '#030712';
+  context.fillRect(0, 560, 512, 208);
+  const buildings = [
+    [0, 470, 92], [78, 520, 118], [181, 448, 92], [260, 505, 112],
+    [361, 430, 96], [445, 490, 80],
+  ];
+  for (const [x, y, width] of buildings) {
+    context.fillRect(x, y, width, 768 - y);
+  }
+  context.fillStyle = '#d9a85f';
+  for (let y = 500; y < 720; y += 44) {
+    for (let x = 22; x < 500; x += 58) {
+      if ((x + y) % 3 !== 0) context.fillRect(x, y, 7, 4);
+    }
+  }
+
+  return sharpenTexture(new THREE.CanvasTexture(canvas));
+}
+
+function makeNightRoomMaterial(map: THREE.Texture | null) {
+  const material = new THREE.MeshStandardMaterial({
+    map,
+    color: '#ffffff',
+    roughness: 0.9,
+    metalness: 0,
+    side: THREE.DoubleSide,
+  });
+
+  material.onBeforeCompile = (shader) => {
+    shader.vertexShader = `varying vec3 vNightWorldPosition;\n${shader.vertexShader}`;
+    shader.vertexShader = shader.vertexShader.replace(
+      '#include <project_vertex>',
+      `#include <project_vertex>
+      vNightWorldPosition = (modelMatrix * vec4(transformed, 1.0)).xyz;`,
+    );
+    shader.fragmentShader = `varying vec3 vNightWorldPosition;\n${shader.fragmentShader}`;
+    shader.fragmentShader = shader.fragmentShader.replace(
+      '#include <map_fragment>',
+      `#include <map_fragment>
+      float bakedLuminance = dot(diffuseColor.rgb, vec3(0.2126, 0.7152, 0.0722));
+      float nightLuminance = mix(
+        bakedLuminance,
+        0.36,
+        smoothstep(0.16, 0.72, bakedLuminance)
+      );
+      vec3 bakedChroma = diffuseColor.rgb / max(bakedLuminance, 0.001);
+      diffuseColor.rgb = mix(
+        vec3(nightLuminance),
+        bakedChroma * nightLuminance,
+        0.4
+      ) * vec3(0.74, 0.83, 1.0);
+
+      // Keep the lounge side darker than the desk and feather the shadow away
+      // from the night window, giving the sofa a believable moonlit silhouette.
+      vec2 sofaShadowDelta = (vNightWorldPosition.xz - vec2(-1.75, 2.75))
+        / vec2(3.15, 2.20);
+      float sofaShadowArea = 1.0 - smoothstep(0.52, 1.22, length(sofaShadowDelta));
+      float floorSurfaceMask = 1.0 - smoothstep(0.28, 0.68, vNightWorldPosition.y);
+      vec2 fromWindow = normalize(vec2(-6.35, 4.77));
+      float windowDirection = dot(
+        normalize(vNightWorldPosition.xz - vec2(4.60, -2.02) + vec2(0.001)),
+        fromWindow
+      );
+      float directedShadow = sofaShadowArea * floorSurfaceMask
+        * smoothstep(0.62, 0.98, windowDirection);
+      diffuseColor.rgb *= mix(
+        vec3(1.0),
+        vec3(0.48, 0.55, 0.72),
+        directedShadow * 0.66
+      );`,
+    );
+  };
+  material.customProgramCacheKey = () => 'night-room-v4-clean-source-walls';
+  return material;
+}
+
+function makeLinkedInTexture() {
+  const canvas = document.createElement('canvas');
+  canvas.width = 512;
+  canvas.height = 512;
+  const context = canvas.getContext('2d');
+  if (!context) return new THREE.CanvasTexture(canvas);
+
+  context.fillStyle = '#0a66c2';
+  context.fillRect(0, 0, canvas.width, canvas.height);
+  const glow = context.createRadialGradient(150, 110, 20, 180, 160, 390);
+  glow.addColorStop(0, '#55a8ecaa');
+  glow.addColorStop(1, '#07549c00');
+  context.fillStyle = glow;
+  context.fillRect(0, 0, canvas.width, canvas.height);
+  context.fillStyle = '#ffffff';
+  context.font = '700 250px Arial, Helvetica, sans-serif';
+  context.textAlign = 'center';
+  context.textBaseline = 'middle';
+  context.fillText('in', 256, 280);
+
+  return sharpenTexture(new THREE.CanvasTexture(canvas));
+}
+
+function createLinkedInCube() {
+  const root = new THREE.Group();
+  root.name = 'LinkedIn_Profile_Cube';
+  const cube = new THREE.Mesh(
+    new THREE.BoxGeometry(0.3, 0.3, 0.3),
+    new THREE.MeshStandardMaterial({
+      map: makeLinkedInTexture(),
+      color: '#ffffff',
+      roughness: 0.3,
+      metalness: 0.08,
+    }),
+  );
+  cube.castShadow = true;
+  cube.receiveShadow = true;
+  cube.rotation.set(0.04, -0.28, -0.025);
+  root.add(cube);
+  root.position.set(-1.34, 2.47, -4.36);
+  return root;
+}
+
+function drawContributionPanel(
+  context: CanvasRenderingContext2D,
+  contributions: GitHubContribution[] = [],
+  state: 'loading' | 'unavailable' = 'loading',
+) {
+  const { width, height } = context.canvas;
+  context.clearRect(0, 0, width, height);
+  const background = context.createLinearGradient(0, 0, width, height);
+  background.addColorStop(0, '#0d1117');
+  background.addColorStop(1, '#121b27');
+  context.fillStyle = background;
+  context.fillRect(0, 0, width, height);
+
+  context.fillStyle = '#f0f6fc';
+  context.font = '700 38px Arial, Helvetica, sans-serif';
+  context.textAlign = 'left';
+  context.textBaseline = 'alphabetic';
+  context.fillText('GITHUB / CONTRIBUTIONS', 58, 66);
+  context.fillStyle = '#8b949e';
+  context.font = '21px monospace';
+  const total = contributions.reduce((sum, item) => sum + item.count, 0);
+  context.fillText(
+    contributions.length > 0
+      ? `${total.toLocaleString()} contributions in the last year`
+      : state === 'loading' ? 'LOADING CONTRIBUTIONS…' : 'CONTRIBUTIONS UNAVAILABLE',
+    59,
+    104,
+  );
+
+  const columns = 53;
+  const rows = 7;
+  const gap = 7;
+  const cell = 13;
+  const gridWidth = columns * cell + (columns - 1) * gap;
+  const startX = Math.round((width - gridWidth) / 2);
+  const startY = 142;
+  const greens = ['#202a35', '#0e4429', '#006d32', '#26a641', '#39d353'];
+  const latest = contributions.slice(-columns * rows);
+
+  for (let column = 0; column < columns; column += 1) {
+    for (let row = 0; row < rows; row += 1) {
+      const sourceIndex = column * rows + row;
+      const contribution = latest[sourceIndex];
+      const level = contribution ? THREE.MathUtils.clamp(contribution.level, 0, 4) : 0;
+      context.fillStyle = greens[level];
+      context.fillRect(
+        startX + column * (cell + gap),
+        startY + row * (cell + gap),
+        cell,
+        cell,
+      );
+    }
+  }
+
+  context.fillStyle = '#6e7681';
+  context.font = '17px monospace';
+  context.fillText('LESS', width - 235, height - 32);
+  greens.forEach((color, index) => {
+    context.fillStyle = color;
+    context.fillRect(width - 172 + index * 25, height - 48, 17, 17);
+  });
+  context.fillStyle = '#6e7681';
+  context.fillText('MORE', width - 38, height - 32);
+}
+
+function createGitHubPanel() {
+  const root = new THREE.Group();
+  root.name = 'GitHub_Contribution_Panel';
+
+  const canvas = document.createElement('canvas');
+  canvas.width = 1120;
+  canvas.height = 360;
+  const context = canvas.getContext('2d');
+  if (!context) return { root, texture: new THREE.CanvasTexture(canvas), context: null };
+  drawContributionPanel(context);
+  const texture = sharpenTexture(new THREE.CanvasTexture(canvas));
+
+  const frame = new THREE.Mesh(
+    new THREE.BoxGeometry(3.42, 1.28, 0.11),
+    new THREE.MeshStandardMaterial({
+      color: '#151b23',
+      roughness: 0.48,
+      metalness: 0.22,
+    }),
+  );
+  frame.castShadow = true;
+  frame.receiveShadow = true;
+  root.add(frame);
+
+  const display = new THREE.Mesh(
+    new THREE.PlaneGeometry(3.26, 1.05),
+    new THREE.MeshBasicMaterial({ map: texture, toneMapped: false }),
+  );
+  display.position.z = 0.061;
+  root.add(display);
+
+  const accent = new THREE.Mesh(
+    new THREE.BoxGeometry(3.27, 0.025, 0.025),
+    new THREE.MeshStandardMaterial({
+      color: '#39d353',
+      emissive: '#1b7f35',
+      emissiveIntensity: 1.25,
+      roughness: 0.32,
+    }),
+  );
+  accent.position.set(0, -0.59, 0.075);
+  root.add(accent);
+  root.position.set(0.12, 4.82, -5.18);
+  return { root, texture, context };
+}
+
+function createCodolioOwl() {
+  const root = new THREE.Group();
+  root.name = 'Codolio_Profile_Owl';
+
+  const orange = new THREE.MeshStandardMaterial({
+    color: '#f47a22',
+    roughness: 0.66,
+  });
+  const orangeDark = new THREE.MeshStandardMaterial({
+    color: '#cb4f16',
+    roughness: 0.7,
+  });
+  const cream = new THREE.MeshStandardMaterial({
+    color: '#fff4db',
+    roughness: 0.76,
+  });
+  const charcoal = new THREE.MeshStandardMaterial({
+    color: '#1c2533',
+    roughness: 0.34,
+    metalness: 0.08,
+  });
+  const gold = new THREE.MeshStandardMaterial({
+    color: '#ffc24a',
+    roughness: 0.54,
+  });
+
+  const body = new THREE.Mesh(new THREE.SphereGeometry(0.31, 20, 16), orange);
+  body.scale.set(0.9, 1.25, 0.78);
+  body.position.y = 0.36;
+  root.add(body);
+
+  const belly = new THREE.Mesh(new THREE.SphereGeometry(0.22, 18, 14), cream);
+  belly.scale.set(0.72, 1.04, 0.36);
+  belly.position.set(0, 0.32, 0.22);
+  root.add(belly);
+
+  const head = new THREE.Mesh(new THREE.SphereGeometry(0.3, 20, 16), orange);
+  head.scale.set(1.08, 0.9, 0.84);
+  head.position.set(0, 0.73, 0.01);
+  root.add(head);
+
+  const leftWing = new THREE.Mesh(new THREE.SphereGeometry(0.2, 16, 12), orangeDark);
+  leftWing.scale.set(0.42, 1.2, 0.52);
+  leftWing.position.set(-0.27, 0.36, 0.02);
+  leftWing.rotation.z = -0.2;
+  root.add(leftWing);
+  const rightWing = leftWing.clone();
+  rightWing.position.x = 0.27;
+  rightWing.rotation.z = 0.2;
+  root.add(rightWing);
+
+  const eyeGeometry = new THREE.SphereGeometry(0.087, 16, 12);
+  const pupilGeometry = new THREE.SphereGeometry(0.038, 14, 10);
+  const glassesGeometry = new THREE.TorusGeometry(0.125, 0.022, 10, 28);
+  for (const side of [-1, 1]) {
+    const eye = new THREE.Mesh(eyeGeometry, cream);
+    eye.position.set(side * 0.115, 0.75, 0.23);
+    root.add(eye);
+    const pupil = new THREE.Mesh(pupilGeometry, charcoal);
+    pupil.position.set(side * 0.115, 0.75, 0.31);
+    root.add(pupil);
+    const lens = new THREE.Mesh(glassesGeometry, charcoal);
+    lens.position.set(side * 0.13, 0.75, 0.315);
+    root.add(lens);
+  }
+
+  const bridge = new THREE.Mesh(new THREE.BoxGeometry(0.09, 0.022, 0.022), charcoal);
+  bridge.position.set(0, 0.75, 0.315);
+  root.add(bridge);
+
+  const beak = new THREE.Mesh(new THREE.ConeGeometry(0.065, 0.15, 4), gold);
+  beak.rotation.x = Math.PI / 2;
+  beak.rotation.y = Math.PI / 4;
+  beak.position.set(0, 0.62, 0.29);
+  root.add(beak);
+
+  const earGeometry = new THREE.ConeGeometry(0.1, 0.2, 5);
+  const leftEar = new THREE.Mesh(earGeometry, orangeDark);
+  leftEar.position.set(-0.19, 0.96, 0);
+  leftEar.rotation.z = -0.2;
+  root.add(leftEar);
+  const rightEar = leftEar.clone();
+  rightEar.position.x = 0.19;
+  rightEar.rotation.z = 0.2;
+  root.add(rightEar);
+
+  const footGeometry = new THREE.SphereGeometry(0.09, 12, 8);
+  for (const side of [-1, 1]) {
+    const foot = new THREE.Mesh(footGeometry, gold);
+    foot.scale.set(1.1, 0.3, 0.68);
+    foot.position.set(side * 0.13, 0.035, 0.08);
+    root.add(foot);
+  }
+
+  root.traverse((object) => {
+    if (object instanceof THREE.Mesh) {
+      object.castShadow = true;
+      object.receiveShadow = true;
+    }
+  });
+  root.position.set(4.18, 1.91, -4.72);
+  root.rotation.y = -Math.PI / 4;
+  root.scale.setScalar(1.62);
+  return root;
+}
+
+function registerInteractiveItem(
+  root: THREE.Group,
+  key: SocialKey,
+  label: string,
+  url: string,
+  hoverScale = 1.04,
+) {
+  interactiveItems.push({
+    root,
+    key,
+    label,
+    url,
+    baseScale: root.scale.x,
+    hoverScale,
+  });
+  root.userData.socialKey = key;
+  scene.add(root);
+}
+
+async function loadGitHubContributions(
+  context: CanvasRenderingContext2D,
+  texture: THREE.CanvasTexture,
+) {
+  const username = portfolioProfiles.githubUsername.trim();
+  if (!username) return;
+  try {
+    const response = await fetch(
+      `https://github-contributions-api.jogruber.de/v4/${encodeURIComponent(username)}?y=last`,
+    );
+    if (!response.ok) throw new Error(`GitHub contribution request failed: ${response.status}`);
+    const data = await response.json() as { contributions?: GitHubContribution[] };
+    if (!Array.isArray(data.contributions)) throw new Error('Invalid contribution response');
+    drawContributionPanel(context, data.contributions);
+    texture.needsUpdate = true;
+    render();
+  } catch (error) {
+    console.warn('Could not update GitHub contributions.', error);
+    drawContributionPanel(context, [], 'unavailable');
+    texture.needsUpdate = true;
+    render();
+  }
+}
+
+function addSocialPortfolioProps() {
+  const linkedInCube = createLinkedInCube();
+  registerInteractiveItem(
+    linkedInCube,
+    'linkedin',
+    'LinkedIn',
+    portfolioProfiles.linkedinUrl,
+  );
+
+  const githubPanel = createGitHubPanel();
+  registerInteractiveItem(
+    githubPanel.root,
+    'github',
+    'GitHub',
+    portfolioProfiles.githubUrl,
+    1.025,
+  );
+  if (githubPanel.context) {
+    void loadGitHubContributions(githubPanel.context, githubPanel.texture);
+  }
+
+  const codolioOwl = createCodolioOwl();
+  registerInteractiveItem(
+    codolioOwl,
+    'codolio',
+    'Codolio',
+    portfolioProfiles.codolioUrl,
+  );
+
+}
+
+// The original TV is baked into the room mesh. This thin screen sits on its
+// front face and supplies both an invitation and a precise raycast target.
+function addProjectTV() {
+  const canvas = document.createElement('canvas');
+  canvas.width = 1024;
+  canvas.height = 576;
+  const ctx = canvas.getContext('2d');
+  if (!ctx) return;
+  const texture = sharpenTexture(new THREE.CanvasTexture(canvas));
+  const drawScreen = (time: number) => {
+    ctx.fillStyle = '#0a0a0a';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.font = 'bold 70px monospace';
+    ctx.fillStyle = '#f5f5f5';
+    // Reflect a moving point within the screen, as in a classic DVD screensaver.
+    const halfWidth = ctx.measureText('MY PROJECTS').width / 2;
+    const horizontalRange = canvas.width - halfWidth * 2 - 64;
+    const verticalRange = canvas.height - 90 - 64;
+    const bounce = (distance: number, range: number) => {
+      const position = distance % (range * 2);
+      return position <= range ? position : range * 2 - position;
+    };
+    const x = 32 + halfWidth + bounce(horizontalRange / 2 + time * 0.065, horizontalRange);
+    const y = 32 + 45 + bounce(verticalRange / 2 + time * 0.04, verticalRange);
+    ctx.fillText('MY PROJECTS', x, y);
+    texture.needsUpdate = true;
+  };
+  drawScreen(0);
+  if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    const started = performance.now();
+    window.setInterval(() => {
+      if (document.visibilityState !== 'visible') return;
+      drawScreen(performance.now() - started);
+      render();
+    }, 125);
+  }
+  const root = new THREE.Group();
+  const screen = new THREE.Mesh(
+    new THREE.PlaneGeometry(4.20, 2.35),
+    new THREE.MeshBasicMaterial({ map: texture, side: THREE.DoubleSide, toneMapped: false }),
+  );
+  screen.rotation.y = -Math.PI / 2;
+  root.add(screen);
+  root.position.set(4.19, 2.67, 1.82);
+  registerInteractiveItem(root, 'projects', 'Projects', '', 1);
+}
+
+function showSocialHint(message: string) {
+  if (!socialHint) return;
+  window.clearTimeout(hintTimer);
+  socialHint.textContent = message;
+  socialHint.hidden = false;
+  hintTimer = window.setTimeout(() => {
+    socialHint.hidden = true;
+  }, 2800);
+}
+
+function findInteractiveItem(object: THREE.Object3D | null) {
+  let current = object;
+  while (current) {
+    const item = interactiveItems.find((candidate) => candidate.root === current);
+    if (item) return item;
+    current = current.parent;
+  }
+  return null;
+}
+
+function pickInteractiveItem(event: PointerEvent) {
+  if (interactiveItems.length === 0) return null;
+  const bounds = renderer.domElement.getBoundingClientRect();
+  pointer.x = ((event.clientX - bounds.left) / bounds.width) * 2 - 1;
+  pointer.y = -((event.clientY - bounds.top) / bounds.height) * 2 + 1;
+  raycaster.setFromCamera(pointer, camera);
+  const intersections = raycaster.intersectObjects(
+    interactiveItems.map((item) => item.root),
+    true,
+  );
+  return findInteractiveItem(intersections[0]?.object ?? null);
+}
+
+function setHoveredItem(nextItem: InteractiveItem | null) {
+  if (hoveredItem === nextItem) return;
+  if (hoveredItem) hoveredItem.root.scale.setScalar(hoveredItem.baseScale);
+  hoveredItem = nextItem;
+  if (hoveredItem) {
+    hoveredItem.root.scale.setScalar(hoveredItem.baseScale * hoveredItem.hoverScale);
+  }
+  viewport.classList.toggle('is-link-hovering', Boolean(hoveredItem));
+  render();
+}
+
+function addPendantBulb(position: THREE.Vector3, color: string, intensity: number) {
+  const fixture = new THREE.Group();
+  const cordLength = 0.72;
+  const cord = new THREE.Mesh(
+    new THREE.CylinderGeometry(0.015, 0.015, cordLength, 10),
+    new THREE.MeshStandardMaterial({ color: '#19171a', roughness: 0.82 }),
+  );
+  cord.position.set(position.x, position.y + cordLength * 0.5 + 0.16, position.z);
+  cord.castShadow = true;
+  fixture.add(cord);
+
+  const shade = new THREE.Mesh(
+    new THREE.CylinderGeometry(0.12, 0.27, 0.22, 24, 1, true),
+    new THREE.MeshStandardMaterial({
+      color: '#33272a',
+      roughness: 0.58,
+      metalness: 0.18,
+      side: THREE.DoubleSide,
+    }),
+  );
+  shade.position.set(position.x, position.y + 0.12, position.z);
+  shade.castShadow = true;
+  fixture.add(shade);
+
+  const bulb = new THREE.Mesh(
+    new THREE.SphereGeometry(0.105, 24, 16),
+    new THREE.MeshStandardMaterial({
+      color: '#fff3d4',
+      emissive: color,
+      emissiveIntensity: 5,
+      roughness: 0.2,
+    }),
+  );
+  bulb.position.copy(position);
+  fixture.add(bulb);
+
+  const light = new THREE.PointLight(color, intensity, 14.5, 2);
+  light.position.copy(position);
+  light.castShadow = true;
+  const shadowSize = window.matchMedia('(max-width: 720px)').matches ? 512 : 1024;
+  light.shadow.mapSize.set(shadowSize, shadowSize);
+  light.shadow.camera.near = 0.12;
+  light.shadow.camera.far = 15;
+  light.shadow.bias = -0.00035;
+  light.shadow.normalBias = 0.025;
+  light.shadow.radius = 4;
+  fixture.add(light);
+
+  scene.add(fixture);
+}
+
+modelLoader.load(
+  '/assets/original-room-latest.glb?v=night-room-5-jpeg',
+  ({ scene: model }) => {
+    const monitorTexture = makeScreenTexture('monitor');
+    const laptopTexture = makeScreenTexture('laptop');
+
+    model.traverse((object) => {
+      if (object instanceof THREE.Mesh) {
+        const sourceMaterial = Array.isArray(object.material)
+          ? object.material[0]
+          : object.material;
+        const sourceName = sourceMaterial?.name ?? '';
+
+        if (object.name.includes('Monitor_Screen_Dynamic') || sourceName.includes('WEB_Monitor_Screen')) {
+          object.material = new THREE.MeshBasicMaterial({ map: monitorTexture, side: THREE.DoubleSide, toneMapped: false });
+        } else if (object.name.includes('Laptop_Screen_Dynamic') || sourceName.includes('WEB_Laptop_Screen')) {
+          object.material = new THREE.MeshBasicMaterial({ map: laptopTexture, side: THREE.DoubleSide, toneMapped: false });
+        } else if (object.name.includes('Coffee_Steam')) {
+          object.material = new THREE.MeshBasicMaterial({
+            color: '#9a6b66',
+            transparent: true,
+            opacity: 0.22,
+            depthWrite: false,
+            side: THREE.DoubleSide,
+          });
+        } else if (sourceName.includes('SRC_Baked_Day')) {
+          const source = sourceMaterial as THREE.MeshStandardMaterial;
+          const map = source.map ?? source.emissiveMap;
+          if (map) sharpenTexture(map);
+          object.material = makeNightRoomMaterial(map);
+          object.castShadow = true;
+          object.receiveShadow = true;
+        }
+      }
+    });
+    scene.add(model);
+    addSocialPortfolioProps();
+    addProjectTV();
+
+    const nightWindow = new THREE.Mesh(
+      new THREE.PlaneGeometry(1.42, 2.16),
+      new THREE.MeshBasicMaterial({
+        map: makeNightWindowTexture(),
+        side: THREE.DoubleSide,
+        toneMapped: false,
+      }),
+    );
+    nightWindow.position.set(4.60, 3.18, -2.02);
+    nightWindow.rotation.y = -Math.PI / 2;
+    scene.add(nightWindow);
+
+    scene.add(new THREE.AmbientLight('#ffe5cf', 2.8));
+    scene.add(new THREE.HemisphereLight('#607bb2', '#6b4532', 2.2));
+
+    const warmFill = new THREE.DirectionalLight('#ffd2a2', 1.0);
+    warmFill.position.set(-5, 8, 6);
+    scene.add(warmFill);
+
+    const coolFill = new THREE.DirectionalLight('#9fbce8', 0.8);
+    coolFill.position.set(6, 7, -5);
+    scene.add(coolFill);
+    const bounds = new THREE.Box3().setFromObject(model);
+    const center = bounds.getCenter(new THREE.Vector3());
+    const sphere = bounds.getBoundingSphere(new THREE.Sphere());
+    const verticalFov = THREE.MathUtils.degToRad(camera.fov);
+    const horizontalFov = 2 * Math.atan(Math.tan(verticalFov / 2) * camera.aspect);
+    const limitingFov = Math.min(verticalFov, horizontalFov);
+    const fitPadding = camera.aspect < 0.75 ? 1.05 : 0.82;
+    const distance = Math.max(sphere.radius / Math.tan(limitingFov / 2) * fitPadding, 12);
+    const viewDirection = new THREE.Vector3(-0.5, 0.29, 0.5).normalize();
+    startTarget.copy(center);
+    startPosition.copy(center).addScaledVector(viewDirection, distance);
+    camera.position.copy(startPosition);
+    controls.target.copy(startTarget);
+    controls.minDistance = Math.max(6, distance * 0.35);
+    controls.maxDistance = distance * 1.8;
+    controls.update();
+    if (status) status.hidden = true;
+    render();
+    window.dispatchEvent(new Event('room-ready'));
+  },
+  undefined,
+  (error) => {
+    console.error('Could not load the room model.', error);
+    if (status) {
+      const event = error as { message?: string; type?: string; target?: { constructor?: { name?: string }; status?: number; statusText?: string; responseURL?: string; readyState?: number } };
+      const detail = error instanceof Error
+        ? error.message
+        : [event.message, event.type, event.target?.constructor?.name, `status ${event.target?.status}`, `ready ${event.target?.readyState}`, event.target?.responseURL].filter(Boolean).join(' ');
+      status.textContent = `Room failed to load: ${detail}`;
+      status.hidden = false;
+    }
+    window.dispatchEvent(new Event('room-ready'));
+  },
+);
+
+function resize() {
+  const { clientWidth, clientHeight } = viewport;
+  if (!clientWidth || !clientHeight) return;
+  camera.aspect = clientWidth / clientHeight;
+  camera.updateProjectionMatrix();
+  renderer.setSize(clientWidth, clientHeight, false);
+  render();
+}
+
+function render() {
+  renderer.render(scene, camera);
+}
+
+controls.addEventListener('change', render);
+new ResizeObserver(resize).observe(viewport);
+resize();
+
+renderer.domElement.addEventListener('pointermove', (event) => {
+  setHoveredItem(pickInteractiveItem(event));
+});
+
+renderer.domElement.addEventListener('pointerleave', () => {
+  setHoveredItem(null);
+});
+
+renderer.domElement.addEventListener('pointerdown', (event) => {
+  if (event.button !== 0) return;
+  pointerDownPosition = { x: event.clientX, y: event.clientY };
+});
+
+renderer.domElement.addEventListener('pointerup', (event) => {
+  if (event.button !== 0 || !pointerDownPosition) return;
+  const travel = Math.hypot(
+    event.clientX - pointerDownPosition.x,
+    event.clientY - pointerDownPosition.y,
+  );
+  pointerDownPosition = null;
+  if (travel > 6) return;
+  const item = pickInteractiveItem(event);
+  if (!item) return;
+  if (item.key === 'projects') {
+    window.dispatchEvent(new CustomEvent('open-projects'));
+  } else if (item.url.trim()) {
+    window.open(item.url, '_blank', 'noopener,noreferrer');
+  } else {
+    showSocialHint(`${item.label} will open here after you provide the account link.`);
+  }
+});
+
+resetButton?.addEventListener('click', () => {
+  camera.position.copy(startPosition);
+  controls.target.copy(startTarget);
+  controls.update();
+});

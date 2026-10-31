@@ -1,0 +1,13 @@
+---
+import '../../styles/global.css';
+import '../../styles/geist.css';
+import { projects } from '../../data/projects';
+export function getStaticPaths() { return projects.map(project => ({ params: { slug: project.slug }, props: { project } })); }
+const { project } = Astro.props;
+---
+<!doctype html><html lang="en"><head><meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" /><meta name="theme-color" content="#0a0a0a" /><meta name="description" content={project.description} /><title>{project.title} — Om's Room</title><link rel="icon" href="/favicon.svg" /></head>
+<body class="project-page"><header class="project-top"><a href="/?work=1" class="back-link">← ALL PROJECTS</a><span>OM'S ROOM / PROJECTS</span><a href={`https://github.com/Om-Anand-1208/${project.repo}`} target="_blank" rel="noreferrer">GITHUB ↗</a></header>
+<main class="project-layout"><section class="project-copy"><p class="eyebrow">{project.tag}</p><h1>{project.title}<span>.</span></h1><p class="project-description">{project.description}</p><div class="project-stack"><span>BUILT WITH</span><p>{project.stack}</p></div><div class="project-actions"><a href={`https://github.com/Om-Anand-1208/${project.repo}`} target="_blank" rel="noreferrer">View code ↗</a>{project.url && <a href={project.url} target="_blank" rel="noreferrer">Visit project ↗</a>}</div></section>
+<section class="model-section" aria-label={`Interactive model of ${project.title}`}><div class="model-heading"><span>PROJECT OBJECT / 3D</span><span>DRAG TO ROTATE</span></div><div id="project-model" data-model={project.repo === 'Om-Portfolio' ? '/assets/original-room-latest.glb' : `/projects/${project.repo}.glb`}><img src={`/projects/${project.repo}.png`} alt={`Isometric model representing ${project.title}`} /></div><p class="model-caption">A small object for a bigger idea. <span>↗</span></p></section>
+<section class="project-history"><p class="eyebrow">THE BUILD LOG</p><h2>Recent activity<span>.</span></h2><p class="history-note">Latest commits on the default branch. Dates in UTC.</p><div id="history" data-repo={project.repo} aria-live="polite"><p class="history-state">Loading commits…</p></div><a class="history-link" href={`https://github.com/Om-Anand-1208/${project.repo}/commits/`} target="_blank" rel="noreferrer">Full history on GitHub ↗</a></section></main>
+<footer class="project-bottom"><span>OM'S ROOM © {new Date().getFullYear()}</span><a href="/">BACK TO THE ROOM ↑</a></footer><script>import '../../scripts/project-page.ts';</script></body></html>

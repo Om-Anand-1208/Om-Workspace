@@ -1,27 +1,21 @@
-This is a Kotlin Multiplatform project targeting Web.
+# Hey, I'm Om 👋
 
-* [/shared](./shared/src) is for code that will be shared across your Compose Multiplatform applications.
-  It contains several subfolders:
-  - [commonMain](./shared/src/commonMain/kotlin) is for code that’s common for all targets.
-  - Other folders are for Kotlin code that will be compiled for only the platform indicated in the folder name.
-    For example, if you want to use Apple’s CoreCrypto for the iOS part of your Kotlin app,
-    the [iosMain](./shared/src/iosMain/kotlin) folder would be the right place for such calls.
-    Similarly, if you want to edit the Desktop (JVM) specific part, the [jvmMain](./shared/src/jvmMain/kotlin)
-    folder is the appropriate location.
+### I build useful software and thoughtful little digital experiences.
 
-### Running the apps
+Welcome to my corner of GitHub. I like taking an idea from a rough sketch to something people can actually use—and paying attention to the details along the way.
 
-Use the run configurations provided by the run widget in your IDE's toolbar. You can also use these commands and options:
+## What I'm exploring
 
-- Web app:
-  - Wasm target (faster, modern browsers): `./gradlew :webApp:wasmJsBrowserDevelopmentRun`
-  - JS target (slower, supports older browsers): `./gradlew :webApp:jsBrowserDevelopmentRun`
+- **Apps and tools** — practical ideas made with care.
+- **Interactive spaces** — small web experiences that invite a bit of curiosity.
+- **The studio** — this portfolio is becoming a cozy isometric room where each project can open into its own story.
+
+## At my desk right now
+
+I'm building this portfolio with **Astro, Three.js, TypeScript, and CSS**. The first 3D room is here; the project stories and milestones will grow into it next.
 
 ---
 
-Learn more about [Kotlin Multiplatform](https://www.jetbrains.com/help/kotlin-multiplatform-dev/get-started.html),
-[Compose Multiplatform](https://github.com/JetBrains/compose-multiplatform/#compose-multiplatform),
-[Kotlin/Wasm](https://kotl.in/wasm/)…
+*Thanks for stopping by. Make yourself at home.*
 
-We would appreciate your feedback on Compose/Web and Kotlin/Wasm in the public Slack channel [#compose-web](https://slack-chats.kotlinlang.org/c/compose-web).
-If you face any issues, please report them on [YouTrack](https://youtrack.jetbrains.com/newIssue?project=CMP).
+<!-- To show this as a GitHub profile README, keep this file at the root of a public repository named exactly after your GitHub username. -->

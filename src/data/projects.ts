@@ -1,0 +1,8 @@
+export const projects = [
+  { slug:'surferflow', repo:'SurferFlow', title:'SurferFlow', tag:'WEBGL / EXPERIMENT', description:'A procedural surfing playground built with Babylon.js and WebGL. An ongoing experiment in ocean rendering, movement and playful interaction.', stack:'JavaScript · Babylon.js · WebGL 2', url:'https://surfer-flow.vercel.app' },
+  { slug:'cubenikal', repo:'Cubenikal', title:'Cubenikal', tag:'PUZZLE / FORK', description:'A 5×5×5 sliding-block puzzle: follow the arrows to release each steel block. This repository is a fork, reworked in vanilla JavaScript.', stack:'JavaScript · 3D puzzle', url:'' },
+  { slug:'eudyaan', repo:'eUdyaan', title:'eUdyaan', tag:'ANDROID / PROTOTYPE', description:'A mental-wellness Android prototype built with Kotlin and Compose. It uses demo and local data.', stack:'Kotlin · Jetpack Compose', url:'' },
+  { slug:'guess-whose-song', repo:'Guess-Whose-Song', title:'Guess Whose Song', tag:'ANDROID / MULTIPLAYER', description:'A multiplayer music quiz for Android, built with Kotlin and a Ktor backend.', stack:'Kotlin · Android · Ktor', url:'' },
+  { slug:'flood-monitoring', repo:'Flood-Monitoring-System', title:'Flood Monitoring System', tag:'DATA / EXPLORATION', description:'A Python and Streamlit dashboard exploring flood monitoring and machine learning.', stack:'Python · Streamlit · ML', url:'https://flood-monitoring-system.streamlit.app/' },
+  { slug:'om-portfolio', repo:'Om-Portfolio', title:'Om’s Room', tag:'WEB / IN PROGRESS', description:'The space you came from: a portfolio built around a small interactive room. The public repository may not yet reflect the latest local work.', stack:'Astro · Three.js · Blender', url:'' },
+];
