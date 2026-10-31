@@ -33,7 +33,7 @@ if (holder) {
 }
 const history = document.querySelector<HTMLElement>('#history');
 if (history) {
-  fetch(`https://api.github.com/repos/Om-Anand-1208/${encodeURIComponent(history.dataset.repo!)}/commits?per_page=6`)
+  fetch(`https://api.github.com/repos/${encodeURIComponent(history.dataset.owner || "Om-Anand-1208")}/${encodeURIComponent(history.dataset.repo!)}/commits?per_page=6`)
     .then(response => { if (!response.ok) throw new Error(); return response.json(); })
     .then((commits: {sha:string; html_url:string; commit:{message:string; author:{date:string}}}[]) => {
       history.replaceChildren();

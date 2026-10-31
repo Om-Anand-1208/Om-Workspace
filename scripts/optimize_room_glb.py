@@ -6,10 +6,11 @@ UVs are untouched. The operation is idempotent on already optimized exports.
 import io
 import json
 import struct
+import sys
 from pathlib import Path
 from PIL import Image
 
-path = Path(__file__).resolve().parents[1] / 'public/assets/original-room-latest.glb'
+path = Path(sys.argv[1]) if len(sys.argv) > 1 else Path(__file__).resolve().parents[1] / 'public/assets/original-room-latest.glb'
 raw = path.read_bytes()
 magic, version, _ = struct.unpack_from('<4sII', raw)
 if magic != b'glTF' or version != 2:

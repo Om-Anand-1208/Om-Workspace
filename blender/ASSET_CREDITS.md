@@ -23,3 +23,15 @@ The user confirmed they have explicit permission to use selected prop models fro
 | `bruno-simon/macScreenModel.glb` | [Mac screen model](https://github.com/brunosimon/my-room-in-3d/blob/main/static/assets/macScreenModel.glb) | Explicit permission reported by the user |
 | `bruno-simon/elgatoLightModel.glb` | [Elgato light model](https://github.com/brunosimon/my-room-in-3d/blob/main/static/assets/elgatoLightModel.glb) | Explicit permission reported by the user |
 | `bruno-simon/loupedeckButtonsModel.glb` | [Loupedeck buttons model](https://github.com/brunosimon/my-room-in-3d/blob/main/static/assets/loupedeckButtonsModel.glb) | Explicit permission reported by the user |
+
+## Technology shelf icons
+
+The technology shelf uses SVG logo paths from [Simple Icons](https://simpleicons.org/) (package version 16.36.0), published under CC0. The local license is in `public/tech-icons/LICENSE.md`. Brand names and logos remain associated with their respective owners.
+
+## Shelf wood
+
+The shelf uses the 1K color and normal maps from [Oak Veneer 01](https://polyhaven.com/a/oak_veneer_01) by Jenelle van Heerden, published by Poly Haven under CC0.
+
+## Android mascot
+
+The Android bot model is [Android bot by Armory_3D](https://poly.pizza/m/AcvyAnBBrQ), distributed on Poly Pizza under CC0. Android branding belongs to its respective owner.

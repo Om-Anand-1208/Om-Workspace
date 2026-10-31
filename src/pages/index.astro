@@ -24,10 +24,8 @@ import { projects } from '../data/projects';
     </main>
     <dialog class="work-dialog" id="work-dialog" aria-labelledby="work-title">
       <div class="work-shell">
-        <header class="work-header"><div><p class="eyebrow">OM'S ROOM <span>/</span> WORK</p><h2 id="work-title">Projects<span>.</span></h2><p>A collection of things I've been building.</p></div><button type="button" class="close-work" id="close-work" aria-label="Close projects">×</button></header>
-        <div class="catalogue-intro"><span>SELECT A PROJECT TO EXPLORE</span><span>01 — 06</span></div>
-        <div class="catalogue-grid">{projects.map((project, index) => <a class="catalogue-card" href={`/projects/${project.slug}/`}><div class="catalogue-image"><img src={`/projects/${project.repo}.png`} alt={`Isometric model representing ${project.title}`} loading="lazy" /><span>{String(index + 1).padStart(2, '0')}</span></div><div class="catalogue-label"><div><span>{project.tag}</span><h3>{project.title}</h3></div><b aria-hidden="true">↗</b></div></a>)}</div>
-        <footer class="work-footer"><span>BUILT IN PUBLIC</span><span>DATA VIA GITHUB API</span></footer>
+        <header class="work-header"><h2 id="work-title">My Projects</h2><button type="button" class="close-work" id="close-work" aria-label="Close projects">×</button></header>
+        <div class="catalogue-grid">{projects.map((project) => <a class="catalogue-card" href={`/projects/${project.slug}/`}><div class="catalogue-image"><img src={`/projects/${project.repo}.png`} alt="" loading="lazy" /></div><div class="catalogue-label"><h3>{project.title}</h3></div></a>)}</div>
       </div>
     </dialog>
     <script>import '../scripts/welcome.ts'; import '../scripts/room.ts'; import '../scripts/projects.ts';</script>

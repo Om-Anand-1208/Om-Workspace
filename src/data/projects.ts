@@ -1,5 +1,7 @@
-export const projects = [
+type Project = { slug: string; repo: string; title: string; tag: string; description: string; stack: string; url: string; owner?: string };
+export const projects: Project[] = [
   { slug:'surferflow', repo:'SurferFlow', title:'SurferFlow', tag:'WEBGL / EXPERIMENT', description:'A procedural surfing playground built with Babylon.js and WebGL. An ongoing experiment in ocean rendering, movement and playful interaction.', stack:'JavaScript · Babylon.js · WebGL 2', url:'https://surfer-flow.vercel.app' },
+  { slug:'graviton', repo:'Graviton', owner:'Noaman-Akhtar', title:'Graviton', tag:'GAME / COLLABORATION', description:'A gravity-defying arcade runner. Pilot a ship through a spiral around a black hole, dodge asteroids, and survive as long as you can.', stack:'JavaScript · HTML5 Canvas · Web Audio', url:'https://graviton-theta.vercel.app' },
   { slug:'cubenikal', repo:'Cubenikal', title:'Cubenikal', tag:'PUZZLE / FORK', description:'A 5×5×5 sliding-block puzzle: follow the arrows to release each steel block. This repository is a fork, reworked in vanilla JavaScript.', stack:'JavaScript · 3D puzzle', url:'' },
   { slug:'eudyaan', repo:'eUdyaan', title:'eUdyaan', tag:'ANDROID / PROTOTYPE', description:'A mental-wellness Android prototype built with Kotlin and Compose. It uses demo and local data.', stack:'Kotlin · Jetpack Compose', url:'' },
   { slug:'guess-whose-song', repo:'Guess-Whose-Song', title:'Guess Whose Song', tag:'ANDROID / MULTIPLAYER', description:'A multiplayer music quiz for Android, built with Kotlin and a Ktor backend.', stack:'Kotlin · Android · Ktor', url:'' },
