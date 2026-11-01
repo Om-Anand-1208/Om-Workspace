@@ -7,12 +7,13 @@ import { projects } from '../data/projects';
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
+    <script is:inline src="/hard-refresh.js"></script>
     <script is:inline>document.documentElement.classList.add("has-welcome");</script>
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
     <meta name="theme-color" content="#050505" />
     <meta name="description" content="Explore Om's projects and the code behind them." />
-    <title>Om's Room — Projects & Experiments</title>
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <title>Om's Workspace</title>
+    <link rel="icon" type="image/png" href="/chilchuck.png?v=1" />
   </head>
   <body>
     <div class="welcome-screen" id="welcome-screen" role="status" aria-label="Hi, I’m Om Anand. Welcome to my workspace."><div class="welcome-copy" aria-hidden="true"><span class="welcome-line">Hi, I'm Om Anand.</span><span class="welcome-line welcome-line-secondary">Welcome to my workspace.</span></div></div>
@@ -21,13 +22,42 @@ import { projects } from '../data/projects';
       <p class="room-status" id="room-status" role="status">Loading the room…</p>
       <p class="social-hint" id="social-hint" role="status" hidden></p>
       <button class="screen-reader-work" id="open-work" type="button">Explore projects</button>
+      <button class="screen-reader-work" id="open-monitor" type="button">Open monitor terminal</button>
+      <button class="screen-reader-work" id="open-laptop" type="button">Play laptop welcome</button>
     </main>
     <dialog class="work-dialog" id="work-dialog" aria-labelledby="work-title">
       <div class="work-shell">
         <header class="work-header"><h2 id="work-title">My Projects</h2><button type="button" class="close-work" id="close-work" aria-label="Close projects">×</button></header>
-        <div class="catalogue-grid">{projects.map((project) => <a class="catalogue-card" href={`/projects/${project.slug}/`}><div class="catalogue-image"><img src={`/projects/${project.repo}.png`} alt="" loading="lazy" /></div><div class="catalogue-label"><h3>{project.title}</h3></div></a>)}</div>
+        <div class="catalogue-grid">{projects.map((project) => <a class="catalogue-card" href={`/projects/${project.slug}/`}><div class="catalogue-image" data-preview={project.kind}><img src={project.cover} alt="" loading="lazy" /></div><div class="catalogue-label"><h3>{project.title}</h3></div></a>)}</div>
       </div>
     </dialog>
-    <script>import '../scripts/welcome.ts'; import '../scripts/room.ts'; import '../scripts/projects.ts';</script>
+    <dialog class="screen-window terminal-window" id="monitor-window" aria-labelledby="monitor-title">
+      <header class="screen-window-bar"><span id="monitor-title">Terminal</span><button type="button" class="screen-window-close" aria-label="Close terminal">×</button></header>
+      <div class="terminal-body" title="Click to replay">
+        <p class="terminal-command"><span class="terminal-prompt">(psykr@fedora) ( Home ) ❯</span> <span id="terminal-typed" aria-label="fastfetch"></span><span class="terminal-cursor" aria-hidden="true">▌</span></p>
+        <div class="terminal-result" id="terminal-result" hidden>
+          <img src="/chilchuck.png" alt="Pixel-art portrait" />
+          <div class="terminal-info"><p class="terminal-name">Om Anand<br />────────────</p>
+            <dl>
+              <div><dt>Focus</dt><dd>Software &amp; creative code</dd></div>
+              <div><dt>Building</dt><dd>Web, Android &amp; games</dd></div>
+              <div><dt>Languages</dt><dd>Kotlin, JavaScript, Python</dd></div>
+              <div><dt>Frontend</dt><dd>Astro, Three.js, Jetpack Compose</dd></div>
+              <div><dt>Backend</dt><dd>Ktor, Firebase, Redis</dd></div>
+              <div><dt>Graphics</dt><dd>Blender, Babylon.js, WebGL</dd></div>
+              <div><dt>Projects</dt><dd>{projects.length} projects</dd></div>
+              <div><dt>GitHub</dt><dd>Om-Anand-1208</dd></div>
+              <div><dt>Status</dt><dd>Learning &amp; building</dd></div>
+            </dl>
+            <div class="terminal-colors" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+          </div>
+        </div>
+      </div>
+    </dialog>
+    <dialog class="screen-window laptop-window" id="laptop-window" aria-labelledby="laptop-title">
+      <header class="screen-window-bar"><span id="laptop-title">Welcome</span><button type="button" class="screen-window-close" aria-label="Close welcome">×</button></header>
+      <div class="laptop-window-body" title="Click to replay" aria-label="Hi, I'm Om Anand. Welcome to my workspace."><div class="laptop-window-copy" aria-hidden="true"><span></span><span></span></div></div>
+    </dialog>
+    <script>import '../scripts/screen-windows.ts'; import '../scripts/welcome.ts'; import '../scripts/room.ts'; import '../scripts/projects.ts';</script>
   </body>
 </html>

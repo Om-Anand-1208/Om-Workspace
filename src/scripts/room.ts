@@ -47,6 +47,8 @@ const interactiveItems: InteractiveItem[] = [];
 const raycaster = new THREE.Raycaster();
 const pointer = new THREE.Vector2();
 let hoveredItem: InteractiveItem | null = null;
+let hoveredLabel = '';
+let roomModel: THREE.Object3D | null = null;
 let pointerDownPosition: { x: number; y: number } | null = null;
 let hintTimer: number | undefined;
 
@@ -98,95 +100,43 @@ const dracoLoader = new DRACOLoader();
 dracoLoader.setDecoderPath('/draco/');
 modelLoader.setDRACOLoader(dracoLoader);
 
-function makeScreenTexture(kind: 'monitor' | 'laptop') {
+// A canvas version of the fastfetch view is visible on the room monitor.
+function makeMonitorTexture() {
   const canvas = document.createElement('canvas');
-  canvas.width = 960;
-  canvas.height = 600;
+  canvas.width = 960; canvas.height = 600;
   const context = canvas.getContext('2d');
-  if (!context) return new THREE.CanvasTexture(canvas);
-
-  if (kind === 'monitor') {
-    context.fillStyle = '#0b1420';
-    context.fillRect(0, 0, canvas.width, canvas.height);
-    context.fillStyle = '#111f2d';
-    context.fillRect(0, 0, canvas.width, 48);
-    context.fillStyle = '#eff3f7';
-    context.font = '600 18px sans-serif';
-    context.fillText('OM / STUDIO', 28, 30);
-    context.fillStyle = '#8ea1b2';
-    context.font = '13px monospace';
-    context.fillText('WORK    ABOUT    NOTES', 690, 30);
-    context.fillStyle = '#101c29';
-    context.fillRect(0, 48, 190, 552);
-    context.fillStyle = '#61d6e7';
-    context.font = '12px monospace';
-    context.fillText('YOUR SPACE', 28, 95);
-    context.fillStyle = '#c6d0d9';
-    context.font = '15px sans-serif';
-    ['Overview', 'Projects', 'Experiments'].forEach((label, index) => {
-      context.fillText(label, 30, 138 + index * 38);
-    });
-    context.fillStyle = '#61d6e7';
-    context.font = '12px monospace';
-    context.fillText('A NOTE FROM OM', 235, 120);
-    context.fillStyle = '#f1ece4';
-    context.font = '500 42px Georgia, serif';
-    context.fillText('Make ideas real.', 232, 183);
-    context.fillStyle = '#b3c0cb';
-    context.font = '18px sans-serif';
-    context.fillText('Design, code, and small experiments.', 235, 221);
-    const cards = [
-      { x: 235, color: '#25607a', label: 'SELECTED WORK' },
-      { x: 465, color: '#68415e', label: 'RECENT NOTES' },
-      { x: 695, color: '#6a5238', label: 'NOW EXPLORING' },
+  const texture = sharpenTexture(new THREE.CanvasTexture(canvas));
+  if (!context) return texture;
+  const portrait = new Image();
+  const draw = () => {
+    context.fillStyle = '#030506'; context.fillRect(0, 0, 960, 600);
+    context.fillStyle = '#43f598'; context.font = 'bold 22px monospace';
+    context.fillText('(psykr@fedora)  ›', 30, 48);
+    context.fillStyle = '#e8eef1'; context.fillText('fastfetch', 292, 48);
+    if (portrait.complete && portrait.naturalWidth) context.drawImage(portrait, 32, 120, 340, 340);
+    const rows = [
+      ['Om Anand', ''], ['────────────', ''], ['Focus', 'Software & creative code'],
+      ['Building', 'Web, Android & games'], ['Languages', 'Kotlin, JavaScript, Python'],
+      ['Frontend', 'Astro, Three.js, Compose'], ['Backend', 'Ktor, Firebase, Redis'],
+      ['Graphics', 'Blender, Babylon.js, WebGL'], ['Projects', `${projects.length} projects`],
+      ['GitHub', 'Om-Anand-1208'], ['Status', 'Learning & building'],
     ];
-    for (const card of cards) {
-      context.fillStyle = '#152432';
-      context.fillRect(card.x, 280, 205, 220);
-      context.fillStyle = card.color;
-      context.fillRect(card.x + 12, 292, 181, 115);
-      context.fillStyle = '#d9e2e8';
-      context.font = '13px monospace';
-      context.fillText(card.label, card.x + 14, 442);
-      context.fillStyle = '#8496a5';
-      context.fillRect(card.x + 14, 461, 120, 5);
-    }
-    context.fillStyle = '#52d5e6';
-    context.fillRect(0, 584, canvas.width, 16);
-  } else {
-    const background = context.createLinearGradient(0, 0, canvas.width, canvas.height);
-    background.addColorStop(0, '#17374b');
-    background.addColorStop(0.55, '#382a50');
-    background.addColorStop(1, '#bd7357');
-    context.fillStyle = background;
-    context.fillRect(0, 0, canvas.width, canvas.height);
-    context.globalAlpha = 0.16;
-    context.fillStyle = '#76d9e6';
-    context.beginPath(); context.arc(760, 120, 210, 0, Math.PI * 2); context.fill();
-    context.fillStyle = '#f7bc7d';
-    context.beginPath(); context.arc(190, 560, 260, 0, Math.PI * 2); context.fill();
-    context.globalAlpha = 1;
-    context.fillStyle = '#e8dfea';
-    context.font = '13px monospace';
-    context.fillText('OM  /  CREATIVE SYSTEMS', 54, 70);
-    context.fillStyle = '#fff8f0';
-    context.font = '500 54px Georgia, serif';
-    context.fillText('Hello, I’m Om.', 54, 245);
-    context.fillStyle = '#eee1e4';
-    context.font = '20px sans-serif';
-    context.fillText('I make thoughtful digital things.', 58, 289);
-    context.fillStyle = '#111827d9';
-    context.fillRect(58, 350, 196, 52);
-    context.fillStyle = '#b7f4f3';
-    context.font = '13px monospace';
-    context.fillText('EXPLORE PROJECTS  ↗', 75, 382);
-    context.fillStyle = '#ffffffaa';
-    context.font = '12px monospace';
-    context.fillText('DESIGN   ·   BUILD   ·   REFINE', 58, 545);
-  }
-
-  const texture = new THREE.CanvasTexture(canvas);
-  return sharpenTexture(texture);
+    context.font = '22px monospace';
+    rows.forEach(([label, value], index) => {
+      const y = 108 + index * 32;
+      context.fillStyle = index < 2 ? '#e8eef1' : '#45c7ff'; context.fillText(label, 405, y);
+      context.fillStyle = '#e8eef1'; context.fillText(value, 565, y, 370);
+    });
+    ['#151c24', '#ff6273', '#55f49a', '#ffdc65', '#56c6ff', '#cb83ff', '#4fdac7', '#eef4f6'].forEach((color, index) => {
+      context.fillStyle = color; context.fillRect(405 + index * 29, 512, 29, 24);
+    });
+    context.fillStyle = '#43f598'; context.fillText('(psykr@fedora)  › ▌', 30, 555);
+    texture.needsUpdate = true;
+  };
+  portrait.onload = () => { draw(); render(); };
+  portrait.src = '/chilchuck.png';
+  draw();
+  return texture;
 }
 
 // The laptop repeats the same greeting as the opening screen.
@@ -219,10 +169,6 @@ function makeLaptopWelcomeTexture() {
       if (!reducedMotion && typing && Math.floor(time / 325) % 2 === 0) text += '▌';
       context.fillText(text, canvas.width / 2, 265 + index * 70, 880);
     });
-    if (time >= 3450) {
-      const width = Math.min(1, (time - 3450) / 450) * context.measureText(lines[1]).width;
-      context.fillRect((canvas.width - width) / 2, 378, width, 4);
-    }
     context.globalAlpha = 1;
     texture.needsUpdate = true;
   };
@@ -500,7 +446,7 @@ function createAndroidMascot() {
   // The desk surface at this location is y = 1.896.
   root.position.set(4.12, 1.90, -4.55);
   root.rotation.y = -Math.PI / 4;
-  modelLoader.load('/assets/android-bot-armory.glb', ({ scene: model }) => {
+  modelLoader.load('/android-bot-armory.glb', ({ scene: model }) => {
     const bounds = new THREE.Box3().setFromObject(model);
     const size = bounds.getSize(new THREE.Vector3());
     const center = bounds.getCenter(new THREE.Vector3());
@@ -618,7 +564,7 @@ function addProjectTV() {
   const texture = sharpenTexture(new THREE.CanvasTexture(canvas));
   const images = projects.map(project => {
     const image = new Image();
-    image.src = `/projects/${project.repo}.png`;
+    image.src = project.cover;
     image.addEventListener('load', () => { drawScreen(0); render(); });
     return image;
   });
@@ -647,7 +593,12 @@ function addProjectTV() {
       const left = x + offset * (cardWidth + cardGap);
       ctx.fillStyle = '#222'; ctx.fillRect(left, 110, cardWidth, 370);
       const image = images[index];
-      if (image.complete && image.naturalWidth) ctx.drawImage(image, left, 110, cardWidth, 370);
+      if (image.complete && image.naturalWidth) {
+        const scale = Math.min(cardWidth / image.naturalWidth, 370 / image.naturalHeight);
+        const width = image.naturalWidth * scale;
+        const height = image.naturalHeight * scale;
+        ctx.drawImage(image, left + (cardWidth - width) / 2, 110 + (370 - height) / 2, width, height);
+      }
       const shade = ctx.createLinearGradient(0, 350, 0, 480);
       shade.addColorStop(0, '#0000'); shade.addColorStop(1, '#000e');
       ctx.fillStyle = shade; ctx.fillRect(left, 330, cardWidth, 150);
@@ -697,31 +648,61 @@ function findInteractiveItem(object: THREE.Object3D | null) {
   return null;
 }
 
-function pickInteractiveItem(event: PointerEvent) {
-  if (interactiveItems.length === 0) return null;
+type RoomHit = { item: InteractiveItem | null; label: string; screen?: 'monitor' | 'laptop' };
+
+// The original furniture is baked into one mesh. Use the point actually hit
+// on that mesh to identify the main areas, rather than invisible click boxes.
+function bakedRoomLabel(point: THREE.Vector3, object: THREE.Object3D) {
+  if (object.name.includes('Laptop_Screen')) return 'Laptop';
+  if (object.name.includes('Monitor_Screen')) return 'Monitor';
+  if (object.name.includes('Coffee_Steam')) return 'Coffee';
+  if (point.y < 0.12) return 'Wood floor';
+  if (point.y > 5.5 || point.z < -5.08 || point.x > 4.45) return 'Room';
+  if (point.z < -3 && point.y < 2.15) return 'Workstation desk';
+  if (point.z < -3 && point.y < 3.5) return 'Workstation';
+  if (point.x > 1.8 && point.z > 0) return 'TV and media console';
+  if (point.z > 0 && point.y < 2.2) return 'Sofa';
+  return 'Room furnishing';
+}
+
+function pickRoomHit(event: PointerEvent): RoomHit | null {
   const bounds = renderer.domElement.getBoundingClientRect();
   pointer.x = ((event.clientX - bounds.left) / bounds.width) * 2 - 1;
   pointer.y = -((event.clientY - bounds.top) / bounds.height) * 2 + 1;
   raycaster.setFromCamera(pointer, camera);
-  const intersections = raycaster.intersectObjects(
-    interactiveItems.map((item) => item.root),
-    true,
-  );
-  return findInteractiveItem(intersections[0]?.object ?? null);
+  const intersections = raycaster.intersectObjects(scene.children, true);
+  for (const intersection of intersections) {
+    if (intersection.object.name.includes('Monitor_Screen_Dynamic')) return { item: null, label: 'Open terminal', screen: 'monitor' };
+    if (intersection.object.name.includes('Laptop_Screen_Dynamic')) return { item: null, label: 'Play welcome', screen: 'laptop' };
+    const item = findInteractiveItem(intersection.object);
+    if (item) return { item, label: item.key === 'projects' ? 'Explore projects' : item.key === 'android' ? 'Android mascot' : `Visit ${item.label} ↗` };
+    let current: THREE.Object3D | null = intersection.object;
+    while (current && current !== scene) {
+      if (current === roomModel) return { item: null, label: bakedRoomLabel(intersection.point, intersection.object) };
+      if (current.name === 'Technology display shelf' || current.name.endsWith(' symbol') ||
+          current.name === 'Potted plant' || current.name === 'Vines and coloured string lights' ||
+          current.name.endsWith(' developer poster') || current.name === 'Warm LED tube light') {
+        return { item: null, label: current.name.replace('code developer poster', 'Developer poster').replace('terminal developer poster', 'Developer poster') };
+      }
+      current = current.parent;
+    }
+  }
+  return null;
 }
 
-function setHoveredItem(nextItem: InteractiveItem | null) {
-  if (hoveredItem === nextItem) return;
+function setHoveredHit(hit: RoomHit | null) {
+  const nextItem = hit?.item ?? null;
+  const nextLabel = hit?.label ?? '';
+  if (hoveredItem === nextItem && hoveredLabel === nextLabel) return;
   if (hoveredItem) hoveredItem.root.scale.setScalar(hoveredItem.baseScale);
   hoveredItem = nextItem;
-  if (hoveredItem) {
-    hoveredItem.root.scale.setScalar(hoveredItem.baseScale * hoveredItem.hoverScale);
-  }
-  viewport.classList.toggle('is-link-hovering', Boolean(hoveredItem && hoveredItem.key !== 'android'));
+  hoveredLabel = nextLabel;
+  if (hoveredItem) hoveredItem.root.scale.setScalar(hoveredItem.baseScale * hoveredItem.hoverScale);
+  viewport.classList.toggle('is-link-hovering', Boolean(hit?.screen || (hoveredItem && (hoveredItem.url || hoveredItem.key === 'projects'))));
   if (socialHint) {
     window.clearTimeout(hintTimer);
-    socialHint.hidden = !hoveredItem;
-    if (hoveredItem) socialHint.textContent = hoveredItem.key === 'projects' ? 'Explore projects' : hoveredItem.key === 'android' ? 'Android mascot' : `Visit ${hoveredItem.label} ↗`;
+    socialHint.hidden = !nextLabel;
+    socialHint.textContent = nextLabel;
   }
   render();
 }
@@ -778,9 +759,9 @@ function addPendantBulb(position: THREE.Vector3, color: string, intensity: numbe
 }
 
 modelLoader.load(
-  '/assets/room-sofa-shifted.glb?v=sofa-shift-2',
+  '/room-sofa-shifted.glb?v=sofa-shift-2',
   ({ scene: model }) => {
-    const monitorTexture = makeScreenTexture('monitor');
+    const monitorTexture = makeMonitorTexture();
     const laptopTexture = makeLaptopWelcomeTexture();
 
     model.traverse((object) => {
@@ -813,6 +794,7 @@ modelLoader.load(
       }
     });
     scene.add(model);
+    roomModel = model;
     addSocialPortfolioProps();
     addProjectTV();
     addTechShelf(scene, render);
@@ -899,11 +881,11 @@ renderer.domElement.addEventListener('pointermove', (event) => {
     socialHint.style.left = `${Math.min(event.clientX + 16, window.innerWidth - 160)}px`;
     socialHint.style.top = `${Math.min(event.clientY + 18, window.innerHeight - 50)}px`;
   }
-  if (event.pointerType !== 'touch') setHoveredItem(pickInteractiveItem(event));
+  if (event.pointerType !== 'touch') setHoveredHit(pickRoomHit(event));
 });
 
 renderer.domElement.addEventListener('pointerleave', () => {
-  setHoveredItem(null);
+  setHoveredHit(null);
 });
 
 renderer.domElement.addEventListener('pointerdown', (event) => {
@@ -919,8 +901,11 @@ renderer.domElement.addEventListener('pointerup', (event) => {
   );
   pointerDownPosition = null;
   if (travel > 6) return;
-  const item = pickInteractiveItem(event);
-  if (!item) return;
+  const hit = pickRoomHit(event);
+  if (!hit) return;
+  if (hit.screen) { window.dispatchEvent(new CustomEvent('open-room-screen', { detail: hit.screen })); return; }
+  const item = hit.item;
+  if (!item) { showSocialHint(hit.label); return; }
   if (item.key === 'projects') {
     window.dispatchEvent(new CustomEvent('open-projects'));
   } else if (item.key === 'android') {

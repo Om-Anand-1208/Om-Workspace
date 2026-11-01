@@ -1,0 +1,11 @@
+{
+  "repo": "Cubenikal",
+  "title": "Cubenikal",
+  "description": "A 5×5×5 sliding-block puzzle: follow the arrows to release each steel block. This repository is a fork, reworked in vanilla JavaScript.",
+  "stack": "JavaScript · HTML · CSS · 3D puzzle · Game logic",
+  "url": "",
+  "order": 3,
+  "kind": "model",
+  "cover": "Cubenikal.png",
+  "model": "Cubenikal.glb"
+}

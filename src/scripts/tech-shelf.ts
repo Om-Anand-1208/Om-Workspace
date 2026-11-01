@@ -58,6 +58,7 @@ export function addTechShelf(scene: THREE.Scene, render: () => void) {
       streamlit:'Streamlit', pandas:'pandas', numpy:'NumPy', scikitlearn:'scikit-learn', firebase:'Firebase', redis:'Redis',
       spotify:'Spotify', docker:'Docker', vercel:'Vercel', matplotlib:'Matplotlib', seaborn:'Seaborn', joblib:'joblib',
     };
+    badge.name = `${displayNames[name] || name} symbol`;
     const labelCanvas = document.createElement('canvas'); labelCanvas.width = 256; labelCanvas.height = 64;
     const labelContext = labelCanvas.getContext('2d');
     if (labelContext) {

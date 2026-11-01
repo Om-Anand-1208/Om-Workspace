@@ -1,0 +1,24 @@
+{
+  "repo": "Guess-Whose-Song",
+  "title": "Guess Whose Song",
+  "description": "A multiplayer music quiz for Android, built with Kotlin and a Ktor backend.",
+  "stack": "Kotlin · Android · Jetpack Compose · Ktor · Firebase · Redis",
+  "url": "",
+  "order": 5,
+  "kind": "image",
+  "cover": "cover.png",
+  "gallery": [
+    {
+      "file": "lobby.png",
+      "alt": "Guess Whose Song lobby"
+    },
+    {
+      "file": "round.png",
+      "alt": "Guess Whose Song voting round"
+    },
+    {
+      "file": "results.png",
+      "alt": "Guess Whose Song results"
+    }
+  ]
+}

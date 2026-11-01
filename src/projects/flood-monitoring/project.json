@@ -1,0 +1,11 @@
+{
+  "repo": "Flood-Monitoring-System",
+  "title": "Flood Monitoring System",
+  "description": "A Python and Streamlit dashboard exploring flood monitoring and machine learning.",
+  "stack": "Python · Streamlit · scikit-learn · pandas · NumPy · Machine learning",
+  "url": "https://flood-monitoring-system.streamlit.app/",
+  "order": 6,
+  "kind": "model",
+  "cover": "Flood-Monitoring-System.png",
+  "model": "Flood-Monitoring-System.glb"
+}

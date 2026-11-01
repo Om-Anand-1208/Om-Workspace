@@ -1,0 +1,21 @@
+{
+  "repo": "Graviton",
+  "owner": "Noaman-Akhtar",
+  "title": "Graviton",
+  "description": "A gravity-defying arcade runner. Pilot a ship through a spiral around a black hole, dodge asteroids, and survive as long as you can.",
+  "stack": "JavaScript · HTML5 Canvas · Web Audio · Game physics",
+  "url": "https://graviton-theta.vercel.app",
+  "order": 2,
+  "kind": "image",
+  "cover": "cover.png",
+  "gallery": [
+    {
+      "file": "menu.png",
+      "alt": "Graviton main menu"
+    },
+    {
+      "file": "black-hole.png",
+      "alt": "Graviton black hole"
+    }
+  ]
+}

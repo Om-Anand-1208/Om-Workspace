@@ -3,31 +3,66 @@ import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { DRACOLoader } from 'three/addons/loaders/DRACOLoader.js';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 const holder = document.querySelector<HTMLElement>('#project-model');
-if (holder) {
+if (holder?.dataset.model) {
   try {
     const scene = new THREE.Scene();
-    const camera = new THREE.PerspectiveCamera(35, 1, .1, 100);
-    camera.position.set(7, 6, 7);
+    const isFlood = holder.dataset.model.includes('Flood-Monitoring-System');
+    // Match the orthographic cameras used for the Blender catalogue renders.
+    const viewWidth = isFlood ? 6.7 : 6;
+    const camera = new THREE.OrthographicCamera(-viewWidth / 2, viewWidth / 2, 3, -3, .1, 100);
+    camera.position.set(isFlood ? 6 : 7, isFlood ? 6 : 7, isFlood ? 8 : 9);
     const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
-    renderer.setPixelRatio(Math.min(devicePixelRatio, 1.5)); renderer.outputColorSpace = THREE.SRGBColorSpace;
-    const controls = new OrbitControls(camera, renderer.domElement); controls.target.set(0, .7, 0); controls.enablePan = false; controls.enableZoom = false; controls.maxPolarAngle = Math.PI / 2; controls.update();
-    scene.add(new THREE.HemisphereLight(0xffffff, 0x526c68, 2.2)); const light = new THREE.DirectionalLight(0xffffff, 2); light.position.set(5, 8, 5); scene.add(light);
+    renderer.setPixelRatio(Math.min(devicePixelRatio, 1.5));
+    renderer.outputColorSpace = THREE.SRGBColorSpace;
+    renderer.toneMapping = THREE.ACESFilmicToneMapping;
+    renderer.toneMappingExposure = 1.05;
+    renderer.shadowMap.enabled = true;
+    renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+    const controls = new OrbitControls(camera, renderer.domElement);
+    controls.target.set(0, isFlood ? .8 : 1.1, 0);
+    controls.enablePan = false;
+    controls.enableZoom = false;
+    controls.maxPolarAngle = Math.PI / 2;
+    controls.update();
+    scene.add(new THREE.HemisphereLight('#fff1dc', '#6a7a75', 1.65));
+    const addLight = (color: string, intensity: number, x: number, y: number, z: number, shadows = false) => {
+      const light = new THREE.DirectionalLight(color, intensity);
+      light.position.set(x, y, z);
+      if (shadows) {
+        light.castShadow = true;
+        light.shadow.mapSize.set(1024, 1024);
+        Object.assign(light.shadow.camera, { left: -5, right: 5, top: 5, bottom: -5, near: .1, far: 30 });
+        light.shadow.bias = -.0002;
+        light.shadow.normalBias = .025;
+        light.shadow.radius = 3;
+      }
+      scene.add(light);
+    };
+    addLight('#ffdbb5', 2, 1, 7, 4, true);
+    addLight('#c9ddff', 1.15, -4, 5, 0);
+    addLight('#ffe1bd', 1, 2, 5, -4);
     const render = () => renderer.render(scene, camera);
     controls.addEventListener('change', render);
     const loader = new GLTFLoader();
     const draco = new DRACOLoader(); draco.setDecoderPath('/draco/'); loader.setDRACOLoader(draco);
-    loader.load(holder.dataset.model!, gltf => {
-      if (holder.dataset.model?.includes('original-room')) {
-        const bounds = new THREE.Box3().setFromObject(gltf.scene);
-        const size = bounds.getSize(new THREE.Vector3());
-        const center = bounds.getCenter(new THREE.Vector3());
-        const scale = 4.2 / Math.max(size.x, size.y, size.z);
-        gltf.scene.scale.setScalar(scale); gltf.scene.position.copy(center).multiplyScalar(-scale);
-        camera.position.set(-7, 5, 7); controls.target.set(0, 0, 0); controls.update();
-      }
-      scene.add(gltf.scene); holder.replaceChildren(renderer.domElement); resize();
+    loader.load(holder.dataset.model, gltf => {
+      gltf.scene.traverse(object => {
+        if (object instanceof THREE.Mesh) { object.castShadow = true; object.receiveShadow = true; }
+      });
+      scene.add(gltf.scene);
+      holder.replaceChildren(renderer.domElement);
+      resize();
     }, undefined, () => {});
-    function resize() { if (!holder) return; camera.aspect = holder.clientWidth / holder.clientHeight; camera.updateProjectionMatrix(); renderer.setSize(holder.clientWidth, holder.clientHeight, false); render(); }
+    function resize() {
+      if (!holder) return;
+      const aspect = holder.clientWidth / holder.clientHeight;
+      if (!aspect) return;
+      const width = Math.max(viewWidth, viewWidth * aspect / (4 / 3));
+      const height = width / aspect;
+      camera.left = -width / 2; camera.right = width / 2;
+      camera.top = height / 2; camera.bottom = -height / 2;
+      camera.updateProjectionMatrix(); renderer.setSize(holder.clientWidth, holder.clientHeight, false); render();
+    }
     new ResizeObserver(resize).observe(holder);
   } catch { /* The snapshot remains available when WebGL is unavailable. */ }
 }

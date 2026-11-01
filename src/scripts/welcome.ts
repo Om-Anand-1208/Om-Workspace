@@ -1,6 +1,7 @@
 const welcome = document.querySelector<HTMLElement>('#welcome-screen');
 const experience = document.querySelector<HTMLElement>('.experience');
-const returningToCatalogue = new URLSearchParams(window.location.search).has('work');
+const params = new URLSearchParams(window.location.search);
+const returningToCatalogue = params.has('work') || params.has('embed');
 const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
 if (welcome && experience && !returningToCatalogue) {

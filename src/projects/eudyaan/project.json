@@ -1,0 +1,24 @@
+{
+  "repo": "eUdyaan",
+  "title": "eUdyaan",
+  "description": "A mental-wellness Android prototype built with Kotlin and Compose. It uses demo and local data.",
+  "stack": "Kotlin · Android · Jetpack Compose · Material 3 · SharedPreferences",
+  "url": "",
+  "order": 4,
+  "kind": "image",
+  "cover": "cover.png",
+  "gallery": [
+    {
+      "file": "home.png",
+      "alt": "eUdyaan home screen"
+    },
+    {
+      "file": "settings.png",
+      "alt": "eUdyaan settings"
+    },
+    {
+      "file": "community.png",
+      "alt": "eUdyaan community post"
+    }
+  ]
+}

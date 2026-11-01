@@ -1,0 +1,10 @@
+{
+  "repo": "Om-Workspace",
+  "title": "Om’s Workspace",
+  "description": "The space you came from: a portfolio built around a small interactive room. A look at the interactive workspace and the projects inside it.",
+  "stack": "Astro · TypeScript · Three.js · WebGL · Blender",
+  "url": "",
+  "order": 7,
+  "kind": "room",
+  "cover": "cover.png"
+}

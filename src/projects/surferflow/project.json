@@ -1,0 +1,16 @@
+{
+  "repo": "SurferFlow",
+  "title": "SurferFlow",
+  "description": "A procedural surfing playground built with Babylon.js and WebGL. An ongoing experiment in ocean rendering, movement and playful interaction.",
+  "stack": "JavaScript · Babylon.js · WebGL 2 · GLSL · Procedural graphics",
+  "url": "https://surfer-flow.vercel.app",
+  "order": 1,
+  "kind": "image",
+  "cover": "cover.jpg",
+  "gallery": [
+    {
+      "file": "surfing.jpg",
+      "alt": "Surfing near the shore in SurferFlow"
+    }
+  ]
+}

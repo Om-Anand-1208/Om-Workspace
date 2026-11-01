@@ -23,7 +23,7 @@ export function addGreenery(scene: THREE.Scene, loader: GLTFLoader, render: () =
   const stem = new THREE.Mesh(new THREE.TubeGeometry(curve, 320, .017, 6, false), stemMaterial);
   vine.add(stem);
   // Reuse a textured leaf extracted from the same CC0 plant as the floor pots.
-  loader.load('/assets/vine-leaf.glb', ({ scene: leafModel }) => {
+  loader.load('/vine-leaf.glb', ({ scene: leafModel }) => {
     let template: THREE.Mesh | undefined;
     leafModel.traverse(object => { if (object instanceof THREE.Mesh && !template) template = object; });
     if (!template) return;
@@ -56,7 +56,7 @@ export function addGreenery(scene: THREE.Scene, loader: GLTFLoader, render: () =
   scene.add(vine);
 
   // Reuse the CC0 plant model; scale and ground using its own bounds.
-  loader.load('/assets/potted-plant-web.glb', ({ scene: source }) => {
+  loader.load('/potted-plant-web.glb', ({ scene: source }) => {
     const bounds = new THREE.Box3().setFromObject(source);
     const size = bounds.getSize(new THREE.Vector3());
     const center = bounds.getCenter(new THREE.Vector3());
@@ -76,7 +76,7 @@ export function addGreenery(scene: THREE.Scene, loader: GLTFLoader, render: () =
           plant.add(extraLeaves);
         }
       }
-      const anchor = new THREE.Group(); anchor.position.set(x, y, z); anchor.rotation.y = rotation; anchor.add(plant); scene.add(anchor);
+      const anchor = new THREE.Group(); anchor.name = 'Potted plant'; anchor.position.set(x, y, z); anchor.rotation.y = rotation; anchor.add(plant); scene.add(anchor);
     };
     addPlant(-4.35, .06, -4.40, 1.55, -.35);
     render();
