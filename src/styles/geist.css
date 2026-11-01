@@ -66,27 +66,17 @@ html:has(.project-page), body.project-page { background:#0a0a0a; }
   .catalogue-label h3 { font-size:14px; }
   .project-history { border-color:#303030; }
 }
-/* Intro is present only when JavaScript is available; the room remains usable without it. */
+/* The greeting animates with CSS from its initial state, even before the app bundle loads. */
 .welcome-screen { display:none; }
-.has-welcome .welcome-screen:not([hidden]) { position:fixed; inset:0; z-index:100; display:grid; place-items:center; padding:24px; background:#000; color:#ededed; opacity:1; transition:opacity .7s ease; }
+.has-welcome .welcome-screen:not([hidden]) { position:fixed; inset:0; z-index:100; display:grid; place-content:center; justify-items:center; padding:24px; background:#000; color:#ededed; opacity:1; transition:opacity .6s ease; }
 .has-welcome .welcome-screen.is-leaving { opacity:0; pointer-events:none; }
-.welcome-copy { text-align:center; font-family:'Geist Variable',system-ui,sans-serif; font-size:clamp(25px,4.3vw,54px); font-weight:500; letter-spacing:-.045em; line-height:1.18; }
-.welcome-line { display:block; opacity:0; animation:welcome-arrive .8s cubic-bezier(.2,.8,.2,1) .15s forwards; }
-.welcome-line-secondary { color:#a1a1a1; animation-delay:.85s; }
-@keyframes welcome-arrive { from { opacity:0; transform:translateY(10px); } to { opacity:1; transform:translateY(0); } }
-@media (prefers-reduced-motion:reduce) { .has-welcome .welcome-screen { transition:none; } .welcome-line { opacity:1; animation:none; } }
-/* Characters resolve into the greeting. */
-.welcome-copy { font-family:'Geist Mono Variable',ui-monospace,monospace; font-size:clamp(19px,3.4vw,43px); font-weight:600; line-height:1.5; letter-spacing:-.045em; }
-.welcome-line { opacity:1; animation:none; white-space:nowrap; }
-.welcome-line-secondary { color:#ededed; }
-.welcome-line-secondary::after { content:'▋'; display:inline-block; margin-left:2px; font-size:.8em; animation:welcome-cursor .65s steps(1,end) infinite; }
-.is-resolved .welcome-line-secondary::after { display:none; }
-@keyframes welcome-cursor { 50% { opacity:0; } }
-@media (prefers-reduced-motion:reduce) { .welcome-line-secondary::after { display:none; animation:none; } }
-.welcome-line { min-height:1.5em; }
-.welcome-line-secondary::after { display:none; }
-.is-typing-first .welcome-line:first-child::after, .is-typing-second .welcome-line-secondary::after { content:'▋'; display:inline-block; margin-left:2px; font-size:.8em; animation:welcome-cursor .65s steps(1,end) infinite; }
-@media (prefers-reduced-motion:reduce) { .is-typing-first .welcome-line:first-child::after, .is-typing-second .welcome-line-secondary::after { display:none; animation:none; } }
+.welcome-copy { text-align:center; font-family:'Geist Mono Variable',ui-monospace,monospace; font-size:clamp(19px,3.4vw,43px); font-weight:600; line-height:1.5; letter-spacing:-.045em; }
+.welcome-line { display:block; white-space:nowrap; opacity:0; transform:translateY(10px); animation:welcome-arrive .8s cubic-bezier(.2,.8,.2,1) .1s forwards; }
+.welcome-line-secondary { animation-delay:.45s; }
+@keyframes welcome-arrive { to { opacity:1; transform:translateY(0); } }
+.welcome-loading { position:absolute; bottom:12%; margin:0; color:#a1a1a1; font:12px var(--mono); opacity:0; transition:opacity .35s ease; }
+.is-waiting .welcome-loading { opacity:1; }
+@media (prefers-reduced-motion:reduce) { .has-welcome .welcome-screen, .welcome-loading { transition:none; } .welcome-line { opacity:1; transform:none; animation:none; } }
 /* Provide keyboard access to the TV's project catalogue without a persistent overlay. */
 .screen-reader-work { position:absolute; width:1px; height:1px; padding:0; overflow:hidden; clip-path:inset(50%); white-space:nowrap; border:0; }
 .screen-reader-work:focus-visible { top:20px; left:20px; width:auto; height:auto; padding:12px 16px; overflow:visible; clip-path:none; border:1px solid #ededed; border-radius:6px; background:#ededed; color:#0a0a0a; z-index:5; }

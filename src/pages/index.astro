@@ -8,7 +8,13 @@ import { projects } from '../data/projects';
   <head>
     <meta charset="UTF-8" />
     <script is:inline src="/hard-refresh.js"></script>
-    <script is:inline>document.documentElement.classList.add("has-welcome");</script>
+    <script is:inline>
+      if (!new URLSearchParams(location.search).has('work') && !new URLSearchParams(location.search).has('embed')) {
+        document.documentElement.classList.add('has-welcome');
+        // If the application bundle fails to start, do not leave the page covered forever.
+        setTimeout(() => document.documentElement.classList.remove('has-welcome'), 12000);
+      }
+    </script>
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
     <meta name="theme-color" content="#050505" />
     <meta name="description" content="Explore Om's projects and the code behind them." />
@@ -16,7 +22,7 @@ import { projects } from '../data/projects';
     <link rel="icon" type="image/png" href="/chilchuck.png?v=1" />
   </head>
   <body>
-    <div class="welcome-screen" id="welcome-screen" role="status" aria-label="Hi, I’m Om Anand. Welcome to my workspace."><div class="welcome-copy" aria-hidden="true"><span class="welcome-line">Hi, I'm Om Anand.</span><span class="welcome-line welcome-line-secondary">Welcome to my workspace.</span></div></div>
+    <div class="welcome-screen" id="welcome-screen" role="status" aria-label="Hi, I’m Om Anand. Welcome to my workspace."><div class="welcome-copy" aria-hidden="true"><span class="welcome-line">Hi, I'm Om Anand.</span><span class="welcome-line welcome-line-secondary">Welcome to my workspace.</span></div><p class="welcome-loading" aria-hidden="true">Preparing the room…</p></div>
     <main class="experience">
       <div class="room-viewport" id="room-viewport" aria-label="Interactive 3D room. Drag to look around and scroll to zoom."></div>
       <p class="room-status" id="room-status" role="status">Loading the room…</p>
