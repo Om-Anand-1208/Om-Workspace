@@ -479,7 +479,7 @@ function createCodolioPanel() {
   const art = new THREE.Mesh(new THREE.PlaneGeometry(1.01, 1.36), new THREE.MeshBasicMaterial({ map: sharpenTexture(new THREE.CanvasTexture(canvas)), toneMapped: false }));
   art.position.z = .045; root.add(art);
   // Tuck the profile between the technology shelf and the workstation.
-  root.position.set(-1.88, 3.45, -5.02);
+  root.position.set(-1.48, 3.55, -4.98);
   root.scale.setScalar(.42);
   return root;
 }
