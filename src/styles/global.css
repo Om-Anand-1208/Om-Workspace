@@ -19,6 +19,24 @@ button:focus-visible { outline: 2px solid var(--cyan); outline-offset: 4px; }
 .room-status[hidden] { display: none; }
 .social-hint { position: absolute; left: 50%; bottom: max(83px, calc(env(safe-area-inset-bottom) + 68px)); max-width: min(420px, calc(100vw - 40px)); margin: 0; padding: 9px 14px; transform: translateX(-50%); border: 1px solid #69dce84a; border-radius: 999px; background: #071018e8; color: #d8f3f4; font: 9px var(--mono); letter-spacing: .04em; text-align: center; backdrop-filter: blur(12px); pointer-events: none; }
 .social-hint[hidden] { display: none; }
+.room-guide, .guide-toggle { position:absolute; left:max(22px, env(safe-area-inset-left)); bottom:max(22px, env(safe-area-inset-bottom)); border:1px solid #333; border-radius:12px; background:#0a0a0af2; color:#a1a1a1; box-shadow:0 12px 32px #0006; backdrop-filter:blur(12px); }
+.room-guide { max-width:calc(100vw - 44px); padding:13px 15px 14px; }
+.room-guide[hidden], .guide-toggle[hidden] { display:none; }
+.room-guide-heading { display:flex; align-items:center; justify-content:space-between; gap:20px; color:#ededed; font:600 15px 'Geist Variable', 'Segoe UI', sans-serif; letter-spacing:-.03em; }
+.room-guide-heading button { width:24px; height:24px; margin:-5px -7px -5px 0; padding:0; border:0; background:transparent; color:#ededed; font-size:19px; cursor:pointer; }
+.room-guide p { margin:10px 0 0; font:12px/1.8 'Geist Variable', 'Segoe UI', sans-serif; }
+.room-guide strong { color:#ededed; font-weight:600; }
+.room-guide p span { color:#666; }
+.guide-touch { display:none; }
+.guide-toggle { min-height:36px; padding:0 12px; font:12px 'Geist Variable', 'Segoe UI', sans-serif; cursor:pointer; }
+.guide-toggle span { color:#ededed; margin-left:6px; }
+@media (max-width:640px), (pointer:coarse) {
+  .room-guide, .guide-toggle { left:max(14px, env(safe-area-inset-left)); bottom:max(14px, env(safe-area-inset-bottom)); }
+  .room-guide { padding:11px 13px 12px; }
+  .room-guide p { font-size:11px; }
+  .guide-desktop { display:none; }
+  .guide-touch { display:block; }
+}
 .studio-mark { position: absolute; top: max(28px, env(safe-area-inset-top)); left: max(30px, env(safe-area-inset-left)); display: flex; align-items: center; gap: 11px; pointer-events: none; }
 .studio-seal { display: grid; width: 33px; height: 33px; place-items: center; border: 1px solid #69dce866; border-radius: 50%; background: #0c1820d9; color: var(--cyan); font: 18px Georgia, serif; }
 .studio-name { color: #f2ece2; font-size: 10px; font-weight: 600; letter-spacing: .14em; }

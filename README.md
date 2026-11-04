@@ -24,7 +24,7 @@ The site is built as static files and can be deployed to a static host using `np
 
 ## Explore the workspace
 
-- Drag the room to orbit, scroll to zoom, and right-drag to pan.
+- Drag the room to orbit, scroll to zoom, and right-drag to pan. On touchscreens, swipe to orbit, pinch to zoom, and use two fingers to pan. The room guide can be closed and reopened.
 - Select the TV to open **My Projects**, then choose a card for its project page. The catalogue also opens at `/projects/`.
 - Select the monitor to open the fastfetch-style profile, or the laptop to replay the welcome. Click inside either window to replay it; use its close button or Escape to close it.
 - Select the LinkedIn, GitHub, or Codolio objects to visit those profiles. Select the résumé or experience letter poster to open its document. Keyboard-accessible controls for the TV and workstation screens are available by tabbing into the room.

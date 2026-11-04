@@ -27,6 +27,12 @@ import { projects } from '../data/projects';
       <div class="room-viewport" id="room-viewport" aria-label="Interactive 3D room. Drag to look around and scroll to zoom."></div>
       <p class="room-status" id="room-status" role="status">Loading the room…</p>
       <p class="social-hint" id="social-hint" role="status" hidden></p>
+      <aside class="room-guide" id="room-guide" aria-label="Room controls">
+        <div class="room-guide-heading"><span>Explore the room</span><button type="button" id="close-guide" aria-label="Close room guide">×</button></div>
+        <p class="guide-desktop"><strong>Drag</strong> to look around <span>·</span> <strong>Scroll</strong> to zoom<br /><strong>Right-drag</strong> to pan <span>·</span> <strong>Click</strong> objects to explore</p>
+        <p class="guide-touch"><strong>Swipe</strong> to look around <span>·</span> <strong>Pinch</strong> to zoom<br /><strong>Two fingers</strong> to pan <span>·</span> <strong>Tap</strong> objects to explore</p>
+      </aside>
+      <button class="guide-toggle" id="open-guide" type="button" aria-controls="room-guide" aria-expanded="false" hidden>Room controls <span aria-hidden="true">?</span></button>
       <button class="screen-reader-work" id="open-work" type="button">Explore projects</button>
       <button class="screen-reader-work" id="open-monitor" type="button">Open monitor terminal</button>
       <button class="screen-reader-work" id="open-laptop" type="button">Play laptop welcome</button>
@@ -66,6 +72,6 @@ import { projects } from '../data/projects';
       <header class="screen-window-bar"><span id="laptop-title">Welcome</span><button type="button" class="screen-window-close" aria-label="Close welcome">×</button></header>
       <div class="laptop-window-body" title="Click to replay" aria-label="Hi, I'm Om Anand. Welcome to my workspace."><div class="laptop-window-copy" aria-hidden="true"><span></span><span></span></div></div>
     </dialog>
-    <script>import '../scripts/screen-windows.ts'; import '../scripts/welcome.ts'; import '../scripts/room.ts'; import '../scripts/projects.ts';</script>
+    <script>import '../scripts/screen-windows.ts'; import '../scripts/welcome.ts'; import '../scripts/room-guide.ts'; import '../scripts/room.ts'; import '../scripts/projects.ts';</script>
   </body>
 </html>
