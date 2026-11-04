@@ -12,7 +12,7 @@ const technologies = [
   ['matplotlib', '#53839d'], ['seaborn', '#537b94'], ['joblib', '#7c6d91'],
 ] as const;
 
-export function addTechShelf(scene: THREE.Scene, render: () => void) {
+export function addTechShelf(scene: THREE.Scene, render: () => void, maxAnisotropy: number) {
   const shelf = new THREE.Group();
   shelf.name = 'Technology display shelf';
   // Mounted on the desk-side wall, in the empty area beside the workstation.
@@ -20,9 +20,9 @@ export function addTechShelf(scene: THREE.Scene, render: () => void) {
   const textures = new THREE.TextureLoader();
   const woodMap = textures.load('/textures/oak-veneer-color.jpg', render);
   woodMap.colorSpace = THREE.SRGBColorSpace;
-  woodMap.anisotropy = 4;
+  woodMap.anisotropy = maxAnisotropy;
   const woodNormal = textures.load('/textures/oak-veneer-normal.jpg', render);
-  woodNormal.anisotropy = 4;
+  woodNormal.anisotropy = maxAnisotropy;
   const wood = new THREE.MeshStandardMaterial({ map: woodMap, normalMap: woodNormal, normalScale: new THREE.Vector2(.28, .28), color: '#f4e1d6', roughness: .72 });
   const woodDark = new THREE.MeshStandardMaterial({ map: woodMap, normalMap: woodNormal, normalScale: new THREE.Vector2(.2, .2), color: '#dbc3b6', roughness: .78 });
   const ivory = new THREE.MeshStandardMaterial({ color: '#f5f5ed', metalness: .35, roughness: .28, side: THREE.DoubleSide });

@@ -75,13 +75,11 @@ html:has(.project-page), body.project-page { background:#0a0a0a; }
 .welcome-copy { text-align:center; font-family:'Geist Mono Variable',ui-monospace,monospace; font-size:clamp(19px,3.4vw,43px); font-weight:600; line-height:1.5; letter-spacing:-.045em; }
  .welcome-line { display:block; min-height:1.5em; white-space:nowrap; visibility:hidden; }
 .is-animating .welcome-line { visibility:visible; }
-.welcome-copy::after { content:''; display:block; height:3px; width:0; max-width:100%; margin:10px auto 0; background:#ededed; transition:width .45s ease; }
-.is-resolved .welcome-copy::after { width:100%; }
 .is-typing-first .welcome-line:first-child::after, .is-typing-second .welcome-line-secondary::after { content:'▋'; display:inline-block; margin-left:2px; font-size:.8em; animation:welcome-cursor .65s steps(1,end) infinite; }
 @keyframes welcome-cursor { 50% { opacity:0; } }
 .welcome-loading { position:absolute; bottom:12%; margin:0; color:#a1a1a1; font:12px var(--mono); opacity:0; transition:opacity .4s ease; }
 .is-waiting .welcome-loading { opacity:1; }
-@media (prefers-reduced-motion:reduce) { .has-welcome .welcome-screen, .has-welcome .experience, .welcome-loading { transition:none; } .welcome-line { visibility:visible; } .welcome-copy::after { display:none; } }
+@media (prefers-reduced-motion:reduce) { .has-welcome .welcome-screen, .has-welcome .experience, .welcome-loading { transition:none; } .welcome-line { visibility:visible; } }
 /* Provide keyboard access to the TV's project catalogue without a persistent overlay. */
 .screen-reader-work { position:absolute; width:1px; height:1px; padding:0; overflow:hidden; clip-path:inset(50%); white-space:nowrap; border:0; }
 .screen-reader-work:focus-visible { top:20px; left:20px; width:auto; height:auto; padding:12px 16px; overflow:visible; clip-path:none; border:1px solid #ededed; border-radius:6px; background:#ededed; color:#0a0a0a; z-index:5; }

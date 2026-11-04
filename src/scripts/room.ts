@@ -1,5 +1,6 @@
 import { projects } from '../data/projects';
 import { addTechShelf } from './tech-shelf';
+import { improveTextureFiltering, renderPixelRatio } from './render-quality';
 import { addGreenery } from './greenery';
 import { addWallDecor } from './wall-decor';
 import * as THREE from 'three';
@@ -68,7 +69,6 @@ try {
   window.dispatchEvent(new Event('room-ready'));
   throw error;
 }
-renderer.setPixelRatio(Math.min(window.devicePixelRatio, window.matchMedia('(max-width: 640px)').matches ? 1.5 : 2));
 renderer.outputColorSpace = THREE.SRGBColorSpace;
 renderer.toneMapping = THREE.ACESFilmicToneMapping;
 renderer.toneMappingExposure = 1.2;
@@ -455,6 +455,7 @@ function createAndroidMascot() {
   root.position.set(4.12, 1.90, -4.55);
   root.rotation.y = -Math.PI / 4;
   modelLoader.load('/android-bot-armory.glb', ({ scene: model }) => {
+    improveTextureFiltering(model, renderer.capabilities.getMaxAnisotropy());
     const bounds = new THREE.Box3().setFromObject(model);
     const size = bounds.getSize(new THREE.Vector3());
     const center = bounds.getCenter(new THREE.Vector3());
@@ -823,8 +824,8 @@ modelLoader.load(
     roomModel = model;
     addSocialPortfolioProps();
     addProjectTV();
-    addTechShelf(scene, render);
-    addGreenery(scene, modelLoader, render);
+    addTechShelf(scene, render, renderer.capabilities.getMaxAnisotropy());
+    addGreenery(scene, modelLoader, render, renderer.capabilities.getMaxAnisotropy());
     addWallDecor(scene);
 
     const nightWindow = new THREE.Mesh(
@@ -888,6 +889,7 @@ function resize() {
   if (!clientWidth || !clientHeight) return;
   camera.aspect = clientWidth / clientHeight;
   camera.updateProjectionMatrix();
+  renderer.setPixelRatio(renderPixelRatio(clientWidth, clientHeight));
   renderer.setSize(clientWidth, clientHeight, false);
   render();
 }

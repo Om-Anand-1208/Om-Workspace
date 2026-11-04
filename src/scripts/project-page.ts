@@ -2,6 +2,7 @@ import * as THREE from 'three';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { DRACOLoader } from 'three/addons/loaders/DRACOLoader.js';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+import { improveTextureFiltering, renderPixelRatio } from './render-quality';
 const holder = document.querySelector<HTMLElement>('#project-model');
 if (holder?.dataset.model) {
   try {
@@ -12,7 +13,6 @@ if (holder?.dataset.model) {
     const camera = new THREE.OrthographicCamera(-viewWidth / 2, viewWidth / 2, 3, -3, .1, 100);
     camera.position.set(isFlood ? 6 : 7, isFlood ? 6 : 7, isFlood ? 8 : 9);
     const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
-    renderer.setPixelRatio(Math.min(devicePixelRatio, 1.5));
     renderer.outputColorSpace = THREE.SRGBColorSpace;
     renderer.toneMapping = THREE.ACESFilmicToneMapping;
     renderer.toneMappingExposure = 1.05;
@@ -30,7 +30,8 @@ if (holder?.dataset.model) {
       light.position.set(x, y, z);
       if (shadows) {
         light.castShadow = true;
-        light.shadow.mapSize.set(1024, 1024);
+        const shadowSize = window.matchMedia('(max-width: 640px)').matches ? 1024 : 2048;
+        light.shadow.mapSize.set(shadowSize, shadowSize);
         Object.assign(light.shadow.camera, { left: -5, right: 5, top: 5, bottom: -5, near: .1, far: 30 });
         light.shadow.bias = -.0002;
         light.shadow.normalBias = .025;
@@ -46,6 +47,7 @@ if (holder?.dataset.model) {
     const loader = new GLTFLoader();
     const draco = new DRACOLoader(); draco.setDecoderPath('/draco/'); loader.setDRACOLoader(draco);
     loader.load(holder.dataset.model, gltf => {
+      improveTextureFiltering(gltf.scene, renderer.capabilities.getMaxAnisotropy());
       gltf.scene.traverse(object => {
         if (object instanceof THREE.Mesh) { object.castShadow = true; object.receiveShadow = true; }
       });
@@ -61,7 +63,9 @@ if (holder?.dataset.model) {
       const height = width / aspect;
       camera.left = -width / 2; camera.right = width / 2;
       camera.top = height / 2; camera.bottom = -height / 2;
-      camera.updateProjectionMatrix(); renderer.setSize(holder.clientWidth, holder.clientHeight, false); render();
+      camera.updateProjectionMatrix();
+      renderer.setPixelRatio(renderPixelRatio(holder.clientWidth, holder.clientHeight));
+      renderer.setSize(holder.clientWidth, holder.clientHeight, false); render();
     }
     new ResizeObserver(resize).observe(holder);
   } catch { /* The snapshot remains available when WebGL is unavailable. */ }

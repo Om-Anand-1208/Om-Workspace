@@ -1,7 +1,8 @@
 import * as THREE from 'three';
 import type { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+import { improveTextureFiltering } from './render-quality';
 
-export function addGreenery(scene: THREE.Scene, loader: GLTFLoader, render: () => void) {
+export function addGreenery(scene: THREE.Scene, loader: GLTFLoader, render: () => void, maxAnisotropy: number) {
   const vine = new THREE.Group();
   vine.name = 'Vines and coloured string lights';
   const stemMaterial = new THREE.MeshStandardMaterial({ color: '#33582f', roughness: .9 });
@@ -24,6 +25,7 @@ export function addGreenery(scene: THREE.Scene, loader: GLTFLoader, render: () =
   vine.add(stem);
   // Reuse a textured leaf extracted from the same CC0 plant as the floor pots.
   loader.load('/vine-leaf.glb', ({ scene: leafModel }) => {
+    improveTextureFiltering(leafModel, maxAnisotropy);
     let template: THREE.Mesh | undefined;
     leafModel.traverse(object => { if (object instanceof THREE.Mesh && !template) template = object; });
     if (!template) return;
@@ -57,6 +59,7 @@ export function addGreenery(scene: THREE.Scene, loader: GLTFLoader, render: () =
 
   // Reuse the CC0 plant model; scale and ground using its own bounds.
   loader.load('/potted-plant-web.glb', ({ scene: source }) => {
+    improveTextureFiltering(source, maxAnisotropy);
     const bounds = new THREE.Box3().setFromObject(source);
     const size = bounds.getSize(new THREE.Vector3());
     const center = bounds.getCenter(new THREE.Vector3());
