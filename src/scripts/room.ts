@@ -95,6 +95,14 @@ controls.minAzimuthAngle = -Math.PI / 2;
 controls.maxAzimuthAngle = 0;
 controls.update();
 
+// Wait for the room and its dependent models, textures, and icons before revealing it.
+THREE.DefaultLoadingManager.onLoad = () => {
+  if (!roomModel) return;
+  render();
+  if (status) status.hidden = true;
+  window.dispatchEvent(new Event('room-ready'));
+};
+
 const modelLoader = new GLTFLoader();
 const dracoLoader = new DRACOLoader();
 dracoLoader.setDecoderPath('/draco/');
@@ -858,9 +866,7 @@ modelLoader.load(
     controls.minDistance = Math.max(6, distance * 0.35);
     controls.maxDistance = distance * 1.8;
     controls.update();
-    if (status) status.hidden = true;
     render();
-    window.dispatchEvent(new Event('room-ready'));
   },
   undefined,
   (error) => {
