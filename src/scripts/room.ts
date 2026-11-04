@@ -27,7 +27,7 @@ const portfolioProfiles = {
   codolioUrl: 'https://codolio.com/profile/om_anand_7323',
 };
 
-type SocialKey = 'linkedin' | 'github' | 'codolio' | 'projects' | 'android';
+type SocialKey = 'linkedin' | 'github' | 'codolio' | 'projects' | 'android' | 'resume' | 'experience';
 type InteractiveItem = {
   root: THREE.Group;
   key: SocialKey;
@@ -116,7 +116,7 @@ function makeMonitorTexture() {
     if (portrait.complete && portrait.naturalWidth) context.drawImage(portrait, 32, 120, 340, 340);
     const rows = [
       ['Om Anand', ''], ['────────────', ''], ['Focus', 'Software & creative code'],
-      ['Building', 'Web, Android & games'], ['Languages', 'Kotlin, JavaScript, Python'],
+      ['Building', 'Web, Android & games'], ['Languages', 'Java, Kotlin, JavaScript, Python'],
       ['Frontend', 'Astro, Three.js, Compose'], ['Backend', 'Ktor, Firebase, Redis'],
       ['Graphics', 'Blender, Babylon.js, WebGL'], ['Projects', `${projects.length} projects`],
       ['GitHub', 'Om-Anand-1208'], ['Status', 'Learning & building'],
@@ -478,7 +478,22 @@ function createCodolioPanel() {
   root.add(frame);
   const art = new THREE.Mesh(new THREE.PlaneGeometry(1.01, 1.36), new THREE.MeshBasicMaterial({ map: sharpenTexture(new THREE.CanvasTexture(canvas)), toneMapped: false }));
   art.position.z = .045; root.add(art);
-  root.position.set(3.0, 4.22, -5.02);
+  // Tuck the profile between the technology shelf and the workstation.
+  root.position.set(-1.88, 3.45, -5.02);
+  root.scale.setScalar(.42);
+  return root;
+}
+
+function createDocumentPoster(image: string, position: THREE.Vector3, rotationY = 0) {
+  const root = new THREE.Group();
+  const frame = new THREE.Mesh(new THREE.BoxGeometry(1.12, 1.48, .08), new THREE.MeshStandardMaterial({ color: '#29272a', roughness: .6, metalness: .18 }));
+  root.add(frame);
+  const texture = new THREE.TextureLoader().load(image, render);
+  sharpenTexture(texture);
+  const art = new THREE.Mesh(new THREE.PlaneGeometry(1.01, 1.36), new THREE.MeshBasicMaterial({ map: texture, toneMapped: false }));
+  art.position.z = .045; root.add(art);
+  root.position.copy(position);
+  root.rotation.y = rotationY;
   return root;
 }
 
@@ -550,6 +565,9 @@ function addSocialPortfolioProps() {
   registerInteractiveItem(android, 'android', 'Android mascot', '', 1.025);
   const codolioPanel = createCodolioPanel();
   registerInteractiveItem(codolioPanel, 'codolio', 'Codolio', portfolioProfiles.codolioUrl, 1.025);
+
+  registerInteractiveItem(createDocumentPoster('/documents/resume.png', new THREE.Vector3(3.0, 4.22, -5.02)), 'resume', 'résumé', 'https://drive.google.com/file/d/1wmCTUM8TiUqAmuWm9Iil6k9M4pjMhqV_/view?usp=sharing', 1.025);
+  registerInteractiveItem(createDocumentPoster('/documents/experience-letter.png', new THREE.Vector3(4.41, 4.22, -3.9), -Math.PI / 2), 'experience', 'experience letter', 'https://drive.google.com/file/d/1ow50hpO_lmO-CUxZ7bJh7jIKkgfUUTzA/view?usp=sharing', 1.025);
 
 }
 
@@ -675,7 +693,7 @@ function pickRoomHit(event: PointerEvent): RoomHit | null {
     if (intersection.object.name.includes('Monitor_Screen_Dynamic')) return { item: null, label: 'Open terminal', screen: 'monitor' };
     if (intersection.object.name.includes('Laptop_Screen_Dynamic')) return { item: null, label: 'Play welcome', screen: 'laptop' };
     const item = findInteractiveItem(intersection.object);
-    if (item) return { item, label: item.key === 'projects' ? 'Explore projects' : item.key === 'android' ? 'Android mascot' : `Visit ${item.label} ↗` };
+    if (item) return { item, label: item.key === 'projects' ? 'Explore projects' : item.key === 'android' ? 'Android mascot' : item.key === 'resume' || item.key === 'experience' ? `Open ${item.label} ↗` : `Visit ${item.label} ↗` };
     let current: THREE.Object3D | null = intersection.object;
     while (current && current !== scene) {
       if (current === roomModel) return { item: null, label: bakedRoomLabel(intersection.point, intersection.object) };

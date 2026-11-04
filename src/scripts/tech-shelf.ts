@@ -1,14 +1,14 @@
 import * as THREE from 'three';
 import { SVGLoader } from 'three/addons/loaders/SVGLoader.js';
 
-// Each plaque is a small 3D object and the raised symbols come from Simple Icons.
+// Each plaque is a small 3D object; symbols come from Simple Icons and Devicon (Java).
 // These are the distinct technologies identified in the portfolio and project READMEs.
 const technologies = [
-  ['git', '#f05234'], ['github', '#37383b'], ['javascript', '#d4b939'], ['typescript', '#3178c6'], ['html5', '#e65b30'], ['css', '#286bd1'],
+  ['java', '#b74735'], ['git', '#f05234'], ['github', '#37383b'], ['javascript', '#d4b939'], ['typescript', '#3178c6'], ['html5', '#e65b30'], ['css', '#286bd1'],
   ['python', '#3775a7'], ['kotlin', '#8654d8'], ['android', '#42a968'], ['jetpackcompose', '#367ee6'], ['ktor', '#326bb2'], ['gradle', '#27484c'],
   ['astro', '#d66840'], ['threedotjs', '#565b61'], ['babylondotjs', '#bb4855'], ['webgl', '#936067'], ['vite', '#8e5bd0'], ['blender', '#db7d36'],
   ['streamlit', '#db5860'], ['pandas', '#505084'], ['numpy', '#4f84b1'], ['scikitlearn', '#d78b45'], ['firebase', '#d5a52d'], ['redis', '#bb514b'],
-  ['spotify', '#3f9b5a'], ['docker', '#378ac4'], ['vercel', '#444449'],
+  ['docker', '#378ac4'], ['vercel', '#444449'],
   ['matplotlib', '#53839d'], ['seaborn', '#537b94'], ['joblib', '#7c6d91'],
 ] as const;
 
@@ -52,11 +52,11 @@ export function addTechShelf(scene: THREE.Scene, render: () => void) {
     rim.position.z = .032; badge.add(rim);
     shelf.add(badge);
     const displayNames: Record<string, string> = {
-      git:'Git', github:'GitHub', javascript:'JavaScript', typescript:'TypeScript', html5:'HTML5', css:'CSS',
+      java:'Java', git:'Git', github:'GitHub', javascript:'JavaScript', typescript:'TypeScript', html5:'HTML5', css:'CSS',
       python:'Python', kotlin:'Kotlin', android:'Android', jetpackcompose:'Compose', ktor:'Ktor', gradle:'Gradle',
       astro:'Astro', threedotjs:'Three.js', babylondotjs:'Babylon.js', webgl:'WebGL', vite:'Vite', blender:'Blender',
       streamlit:'Streamlit', pandas:'pandas', numpy:'NumPy', scikitlearn:'scikit-learn', firebase:'Firebase', redis:'Redis',
-      spotify:'Spotify', docker:'Docker', vercel:'Vercel', matplotlib:'Matplotlib', seaborn:'Seaborn', joblib:'joblib',
+      docker:'Docker', vercel:'Vercel', matplotlib:'Matplotlib', seaborn:'Seaborn', joblib:'joblib',
     };
     badge.name = `${displayNames[name] || name} symbol`;
     const labelCanvas = document.createElement('canvas'); labelCanvas.width = 256; labelCanvas.height = 64;

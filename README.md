@@ -27,7 +27,7 @@ The site is built as static files and can be deployed to a static host using `np
 - Drag the room to orbit, scroll to zoom, and right-drag to pan.
 - Select the TV to open **My Projects**, then choose a card for its project page. The catalogue also opens at `/projects/`.
 - Select the monitor to open the fastfetch-style profile, or the laptop to replay the welcome. Click inside either window to replay it; use its close button or Escape to close it.
-- Select the LinkedIn, GitHub, or Codolio objects to visit those profiles. Keyboard-accessible controls for the TV and workstation screens are available by tabbing into the room.
+- Select the LinkedIn, GitHub, or Codolio objects to visit those profiles. Select the résumé or experience letter poster to open its document. Keyboard-accessible controls for the TV and workstation screens are available by tabbing into the room.
 - Project activity is fetched from the corresponding public GitHub repository. If GitHub is unavailable or rate-limited, the page links to the full history instead.
 
 A normal refresh preserves the open catalogue or current project URL. The supported keyboard restart shortcuts (`Ctrl+Shift+R`, `Ctrl+F5`, and `Cmd+Shift+R`) return to the opening screen; they are handled by the site and do not guarantee bypassing the browser cache.
